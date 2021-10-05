@@ -7,7 +7,7 @@ with open("requirements.txt") as f:
     requirements = f.read().splitlines()
 
 setup(
-    name="mease-elabftw",
+    name="mease_elabftw",
     version="0.0.1",
     author="Liam Keegan",
     author_email="liam@keegan.ch",
