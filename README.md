@@ -1,5 +1,5 @@
 # mease-elabftw
 
-[![tests](https://github.com/spatial-model-editor/sme-contrib/workflows/Tests/badge.svg)](https://github.com/spatial-model-editor/sme-contrib/actions?query=workflow%3ATests)
+[![tests](https://github.com/ssciwr/mease-elabftw/workflows/Tests/badge.svg)](https://github.com/ssciwr/mease-elabftw/actions?query=workflow%3ATests)
 
-Work-in-progress script / python library for extracting metadata from eLabFTW for use in si-pipeline
+Work-in-progress script / simple python library for extracting metadata from eLabFTW for use in si-pipeline
