@@ -5,5 +5,5 @@ def test_import():
     return
 
 
-def test_get_experiment():
-    assert len(elm.get_experiment(156)) > 0
+def test_get():
+    assert len(elm.get(156)) > 0
