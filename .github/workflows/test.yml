@@ -21,6 +21,8 @@ jobs:
       - run: python -m pytest --cov=mease_elabftw --cov-report=xml -v
         env:
           ELABFTW_TOKEN: ${{ secrets.ELABFTW_TOKEN }}
+      # https://stackoverflow.com/questions/12844451/test-test-coverage-with-python-in-sonar-not-showing-up
+      - run: coverage xml -i
       - uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -28,9 +30,6 @@ jobs:
           name: ${{ matrix.os }}-${{ matrix.python-version }}
           fail_ci_if_error: true
           verbose: true
-      # https://stackoverflow.com/questions/12844451/test-test-coverage-with-python-in-sonar-not-showing-up
-      - run: coverage xml -i
-        if: matrix.os == 'ubuntu-20.04' && matrix.python-version == 3.9
       - uses: sonarsource/sonarcloud-github-action@master
         if: matrix.os == 'ubuntu-20.04' && matrix.python-version == 3.9
         env:
