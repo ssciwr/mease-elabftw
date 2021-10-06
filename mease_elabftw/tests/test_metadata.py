@@ -1,9 +1,8 @@
 import mease_elabftw.metadata as elm
 
 
-def test_import():
-    return
-
-
 def test_get():
-    assert len(elm.get(156)) > 0
+    data = elm.get(156)
+    assert len(data.keys()) == 2
+    assert len(data["Custom"].keys()) == 6
+    assert len(data["Electrophysiology"].keys()) == 1
