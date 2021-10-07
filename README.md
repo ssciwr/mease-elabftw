@@ -12,29 +12,19 @@ the [mease-lab-to-nwb](https://github.com/ssciwr/mease-lab-to-nwb) SpikeInterfac
 
 ## How to use
 
-To use, you need to generate an access token in eLabFTW (User Panel -> API Keys -> GENERATE AN API KEY),
-and then set the environment variable `ELABFTW_TOKEN` to this token, e.g.
+To use, you need to generate an API key in eLabFTW (User Panel -> API Keys -> GENERATE AN API KEY),
+and then set the environment variable `ELABFTW_TOKEN` to this key, e.g.
 
 ```bash
-export ELABFTW_TOKEN=abc123abc123
+export ELABFTW_TOKEN=abc123abc123abc123
 ```
 
 Example of use:
 
-```python
-import mease_elabftw
+```pycon
+>>> import mease_elabftw
+>>> mease_elabftw.list_experiments("Liam")
+['163: test fake experiment without json metadata (Liam Keegan, 2021-10-07)', '156: test fake experiment with json metadata (Liam Keegan, 2021-10-01)']
+>>> mease_elabftw.get_metadata(156)
+{'Session start time': {'type': 'date', 'value': '2021-01-01'}, 'Session description': {'type': 'text', 'value': 'description of session'}}
 ```
-
-```python
-mease_elabftw.list_experiments("Liam")
-```
-
-    - 163: test fake experiment without json metadata (Liam Keegan, 2021-10-07)
-    - 156: test fake experiment with json metadata (Liam Keegan, 2021-10-01)
-
-```python
-mease_elabftw.get_metadata(156)
-```
-
-    {'Session start time': {'type': 'date', 'value': '2021-01-01'},
-     'Session description': {'type': 'text', 'value': 'description of session'}}
