@@ -8,13 +8,11 @@ invalid_experiment_id = 9999999999999
 
 def test_get_metadata():
     data = mease_elabftw.get_metadata(valid_experiment_id)
-    assert len(data.keys()) == 2
-    start_time = data.get("Session start time")
-    assert start_time["type"] == "date"
-    assert start_time["value"] == "2021-01-01"
-    description = data.get("Session description")
-    assert description["type"] == "text"
-    assert description["value"] == "description of session"
+    assert len(data.keys()) == 9
+    start_time = data.get("ElectrodeGroup name")
+    assert start_time["value"] == "ElectrodeGroup"
+    description = data.get("Ecephys Device name")
+    assert description["value"] == "Device_ecephys"
 
 
 def test_get_metadata_no_token(monkeypatch):

@@ -34,5 +34,5 @@ This key is needed to authenticate requests to the eLabFTW server.
 >>> mease_elabftw.list_experiments("Liam")
 ['163: test fake experiment without json metadata (Liam Keegan, 2021-10-07)', '156: test fake experiment with json metadata (Liam Keegan, 2021-10-01)']
 >>> mease_elabftw.get_metadata(156)
-{'Session start time': {'type': 'date', 'value': '2021-01-01'}, 'Session description': {'type': 'text', 'value': 'description of session'}}
+{'Ecephys Device name': {'value': 'Device_ecephys'}, 'ElectrodeGroup name': {'value': 'ElectrodeGroup'}, 'session_description': {'value': 'session description'}, 'ElectrodeGroup device': {'value': 'Device_ecephys'}, 'ElectrodeGroup location': {'value': 'location'}, 'ElectricalSeries_raw name': {'value': 'ElectricalSeries_raw'}, 'ElectricalSeries_raw rate': {'value': '1000.0'}, 'ElectrodeGroup description': {'value': 'description'}, 'ElectricalSeries_raw description': {'value': 'ADDME'}}
 ```
