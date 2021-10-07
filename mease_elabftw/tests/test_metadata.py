@@ -41,7 +41,7 @@ def test_get_invalid_id(monkeypatch):
     assert exception_info.type == RuntimeError
     assert (
         str(exception_info.value)
-        == "Experiment with id 1 not found - do you have the correct id?"
+        == f"Experiment with id {invalid_experiment_id} not found - do you have the correct id?"
     )
 
 
@@ -51,5 +51,5 @@ def test_get_valid_id_no_metadata():
     assert exception_info.type == RuntimeError
     assert (
         str(exception_info.value)
-        == "Experiment with id 145 doesn't contain any metadata."
+        == f"Experiment with id {valid_experiment_id_no_metadata} doesn't contain any metadata."
     )

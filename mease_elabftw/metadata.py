@@ -25,9 +25,9 @@ def get(experiment_id):
             )
         else:
             raise e
-    metadata = experiment["metadata"]
-    if metadata is None:
+    metadata = json.loads(experiment.get("metadata", "{}"))
+    if not metadata:
         raise RuntimeError(
             f"Experiment with id {experiment_id} doesn't contain any metadata."
         )
-    return json.loads(metadata)
+    return metadata
