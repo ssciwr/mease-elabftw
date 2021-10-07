@@ -29,3 +29,17 @@ def get_experiment(experiment_id):
             )
         else:
             raise e
+
+
+def get_experiments():
+    manager = get_manager()
+    try:
+        # note: offset is ignored, so for now just setting limit to a large value and making a single request
+        return manager.get_all_experiments({"limit": 999, "offset": 0})
+    except HTTPError as e:
+        if e.response.status_code == 400:
+            raise RuntimeError(
+                f"Could not connect to {url} - do you have a valid token?"
+            )
+        else:
+            raise e
