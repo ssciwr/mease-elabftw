@@ -5,6 +5,17 @@ from requests.exceptions import HTTPError
 url = "https://elabftw.uni-heidelberg.de"
 
 
+def handle_http_error(http_error, experiment_id):
+    if http_error.response.status_code == 400:
+        raise RuntimeError(f"Could not connect to {url} - do you have a valid token?")
+    elif http_error.response.status_code == 403:
+        raise RuntimeError(
+            f"Experiment with id {experiment_id} not found - do you have the correct id?"
+        )
+    else:
+        raise http_error
+
+
 def get_manager():
     token = os.environ.get("ELABFTW_TOKEN")
     if token is None:
@@ -19,16 +30,7 @@ def get_experiment(experiment_id):
     try:
         return manager.get_experiment(experiment_id)
     except HTTPError as e:
-        if e.response.status_code == 400:
-            raise RuntimeError(
-                f"Could not connect to {url} - do you have a valid token?"
-            )
-        elif e.response.status_code == 403:
-            raise RuntimeError(
-                f"Experiment with id {experiment_id} not found - do you have the correct id?"
-            )
-        else:
-            raise e
+        handle_http_error(e, experiment_id)
 
 
 def get_experiments():

@@ -1,13 +1,10 @@
 import pytest
 import mease_elabftw
-
-valid_experiment_id = 156
-valid_experiment_id_no_metadata = 163
-invalid_experiment_id = 9999999999999
+import test_ids
 
 
 def test_get_metadata():
-    data = mease_elabftw.get_metadata(valid_experiment_id)
+    data = mease_elabftw.get_metadata(test_ids.valid_experiment)
     assert len(data.keys()) == 9
     start_time = data.get("ElectrodeGroup name")
     assert start_time["value"] == "ElectrodeGroup"
@@ -18,7 +15,7 @@ def test_get_metadata():
 def test_get_metadata_no_token(monkeypatch):
     monkeypatch.delenv("ELABFTW_TOKEN")
     with pytest.raises(Exception) as exception_info:
-        data = mease_elabftw.get_metadata(valid_experiment_id)
+        data = mease_elabftw.get_metadata(test_ids.valid_experiment)
     assert exception_info.type == RuntimeError
     assert (
         str(exception_info.value)
@@ -29,7 +26,7 @@ def test_get_metadata_no_token(monkeypatch):
 def test_get_metadata_invalid_token(monkeypatch):
     monkeypatch.setenv("ELABFTW_TOKEN", "abc123")
     with pytest.raises(Exception) as exception_info:
-        data = mease_elabftw.get_metadata(valid_experiment_id)
+        data = mease_elabftw.get_metadata(test_ids.valid_experiment)
     assert exception_info.type == RuntimeError
     assert (
         str(exception_info.value)
@@ -39,19 +36,19 @@ def test_get_metadata_invalid_token(monkeypatch):
 
 def test_get_metadata_invalid_id(monkeypatch):
     with pytest.raises(Exception) as exception_info:
-        data = mease_elabftw.get_metadata(invalid_experiment_id)
+        data = mease_elabftw.get_metadata(test_ids.invalid_experiment)
     assert exception_info.type == RuntimeError
     assert (
         str(exception_info.value)
-        == f"Experiment with id {invalid_experiment_id} not found - do you have the correct id?"
+        == f"Experiment with id {test_ids.invalid_experiment} not found - do you have the correct id?"
     )
 
 
 def test_get_metadata_no_metadata():
     with pytest.raises(Exception) as exception_info:
-        data = mease_elabftw.get_metadata(valid_experiment_id_no_metadata)
+        data = mease_elabftw.get_metadata(test_ids.valid_experiment_no_metadata)
     assert exception_info.type == RuntimeError
     assert (
         str(exception_info.value)
-        == f"Experiment with id {valid_experiment_id_no_metadata} doesn't contain any metadata."
+        == f"Experiment with id {test_ids.valid_experiment_no_metadata} doesn't contain any metadata."
     )
