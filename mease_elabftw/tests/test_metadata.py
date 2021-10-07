@@ -9,8 +9,12 @@ invalid_experiment_id = 9999999999999
 def test_get_valid_id():
     data = mease_elabftw.get_metadata(valid_experiment_id)
     assert len(data.keys()) == 2
-    assert len(data["Custom"].keys()) == 6
-    assert len(data["Electrophysiology"].keys()) == 1
+    start_time = data.get("Session start time")
+    assert start_time["type"] == "date"
+    assert start_time["value"] == "2021-01-01"
+    description = data.get("Session description")
+    assert description["type"] == "text"
+    assert description["value"] == "description of session"
 
 
 def test_get_no_token(monkeypatch):
