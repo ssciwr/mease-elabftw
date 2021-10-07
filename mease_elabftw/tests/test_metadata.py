@@ -6,7 +6,7 @@ valid_experiment_id_no_metadata = 163
 invalid_experiment_id = 9999999999999
 
 
-def test_get_valid_id():
+def test_get_metadata():
     data = mease_elabftw.get_metadata(valid_experiment_id)
     assert len(data.keys()) == 2
     start_time = data.get("Session start time")
@@ -17,7 +17,7 @@ def test_get_valid_id():
     assert description["value"] == "description of session"
 
 
-def test_get_no_token(monkeypatch):
+def test_get_metadata_no_token(monkeypatch):
     monkeypatch.delenv("ELABFTW_TOKEN")
     with pytest.raises(Exception) as exception_info:
         data = mease_elabftw.get_metadata(valid_experiment_id)
@@ -28,7 +28,7 @@ def test_get_no_token(monkeypatch):
     )
 
 
-def test_get_invalid_token(monkeypatch):
+def test_get_metadata_invalid_token(monkeypatch):
     monkeypatch.setenv("ELABFTW_TOKEN", "abc123")
     with pytest.raises(Exception) as exception_info:
         data = mease_elabftw.get_metadata(valid_experiment_id)
@@ -39,7 +39,7 @@ def test_get_invalid_token(monkeypatch):
     )
 
 
-def test_get_invalid_id(monkeypatch):
+def test_get_metadata_invalid_id(monkeypatch):
     with pytest.raises(Exception) as exception_info:
         data = mease_elabftw.get_metadata(invalid_experiment_id)
     assert exception_info.type == RuntimeError
@@ -49,7 +49,7 @@ def test_get_invalid_id(monkeypatch):
     )
 
 
-def test_get_valid_id_no_metadata():
+def test_get_metadata_no_metadata():
     with pytest.raises(Exception) as exception_info:
         data = mease_elabftw.get_metadata(valid_experiment_id_no_metadata)
     assert exception_info.type == RuntimeError
