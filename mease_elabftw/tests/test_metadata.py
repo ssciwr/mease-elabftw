@@ -1,5 +1,5 @@
 import pytest
-import mease_elabftw.metadata as elm
+import mease_elabftw
 
 valid_experiment_id = 156
 valid_experiment_id_no_metadata = 163
@@ -7,7 +7,7 @@ invalid_experiment_id = 9999999999999
 
 
 def test_get_valid_id():
-    data = elm.get(valid_experiment_id)
+    data = mease_elabftw.get_metadata(valid_experiment_id)
     assert len(data.keys()) == 2
     assert len(data["Custom"].keys()) == 6
     assert len(data["Electrophysiology"].keys()) == 1
@@ -16,7 +16,7 @@ def test_get_valid_id():
 def test_get_no_token(monkeypatch):
     monkeypatch.delenv("ELABFTW_TOKEN")
     with pytest.raises(Exception) as exception_info:
-        data = elm.get(valid_experiment_id)
+        data = mease_elabftw.get_metadata(valid_experiment_id)
     assert exception_info.type == RuntimeError
     assert (
         str(exception_info.value)
@@ -27,7 +27,7 @@ def test_get_no_token(monkeypatch):
 def test_get_invalid_token(monkeypatch):
     monkeypatch.setenv("ELABFTW_TOKEN", "abc123")
     with pytest.raises(Exception) as exception_info:
-        data = elm.get(valid_experiment_id)
+        data = mease_elabftw.get_metadata(valid_experiment_id)
     assert exception_info.type == RuntimeError
     assert (
         str(exception_info.value)
@@ -37,7 +37,7 @@ def test_get_invalid_token(monkeypatch):
 
 def test_get_invalid_id(monkeypatch):
     with pytest.raises(Exception) as exception_info:
-        data = elm.get(invalid_experiment_id)
+        data = mease_elabftw.get_metadata(invalid_experiment_id)
     assert exception_info.type == RuntimeError
     assert (
         str(exception_info.value)
@@ -47,7 +47,7 @@ def test_get_invalid_id(monkeypatch):
 
 def test_get_valid_id_no_metadata():
     with pytest.raises(Exception) as exception_info:
-        data = elm.get(valid_experiment_id_no_metadata)
+        data = mease_elabftw.get_metadata(valid_experiment_id_no_metadata)
     assert exception_info.type == RuntimeError
     assert (
         str(exception_info.value)
