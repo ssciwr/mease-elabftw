@@ -20,7 +20,7 @@ jobs:
       - run: pip install -r dev-requirements.txt
       - run: python -m pytest --cov=mease_elabftw --cov-report=xml -v
         env:
-          ELABFTW_TOKEN: ${{ secrets.ELABFTW_TOKEN }}
+          ELABFTW_TOKEN: ${{ secrets.ELABFTW_WRITE_TOKEN }}
       - uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

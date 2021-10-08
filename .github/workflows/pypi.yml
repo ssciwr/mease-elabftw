@@ -18,7 +18,7 @@ jobs:
       - run: pip install --upgrade pip setuptools wheel
       - run: python -m pytest -v
         env:
-          ELABFTW_TOKEN: ${{ secrets.ELABFTW_TOKEN }}
+          ELABFTW_TOKEN: ${{ secrets.ELABFTW_WRITE_TOKEN }}
       - run: python setup.py sdist bdist_wheel
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
