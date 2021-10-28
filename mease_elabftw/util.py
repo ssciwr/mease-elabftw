@@ -33,6 +33,14 @@ def get_experiment(experiment_id):
         handle_http_error(e, experiment_id)
 
 
+def get_item(item_id):
+    manager = get_manager()
+    try:
+        return manager.get_item(item_id)
+    except HTTPError as e:
+        handle_http_error(e, item_id)
+
+
 def get_experiments():
     manager = get_manager()
     try:
