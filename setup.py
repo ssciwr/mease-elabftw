@@ -37,5 +37,10 @@ setup(
     license="MIT",
     packages=find_packages(exclude=["docs", "tests"]),
     install_requires=requirements,
+    entry_points={
+        "console_scripts": [
+            "elabftw-list = mease_elabftw.scripts.cli:list",
+        ]
+    },
     zip_safe=False,
 )
