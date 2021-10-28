@@ -39,7 +39,7 @@ setup(
     install_requires=requirements,
     entry_points={
         "console_scripts": [
-            "elabftw-list = mease_elabftw.scripts.cli:list",
+            "elabftw-list = mease_elabftw.scripts.cli:elabftw_list",
         ]
     },
     zip_safe=False,
