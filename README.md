@@ -27,7 +27,7 @@ export ELABFTW_TOKEN=abc123abc123abc123
 
 This key is needed to authenticate requests to the eLabFTW server.
 
-## Use
+## Use in Python
 
 ```pycon
 >>> import mease_elabftw
@@ -35,4 +35,12 @@ This key is needed to authenticate requests to the eLabFTW server.
 ['163: test fake experiment without json metadata (Liam Keegan, 2021-10-07)', '156: test fake experiment with json metadata (Liam Keegan, 2021-10-01)']
 >>> mease_elabftw.get_metadata(156)
 {'Ecephys Device name': {'value': 'Device_ecephys'}, 'ElectrodeGroup name': {'value': 'ElectrodeGroup'}, 'session_description': {'value': 'session description'}, 'ElectrodeGroup device': {'value': 'Device_ecephys'}, 'ElectrodeGroup location': {'value': 'location'}, 'ElectricalSeries_raw name': {'value': 'ElectricalSeries_raw'}, 'ElectricalSeries_raw rate': {'value': '1000.0'}, 'ElectrodeGroup description': {'value': 'description'}, 'ElectricalSeries_raw description': {'value': 'ADDME'}}
+```
+
+## Use from terminal
+
+```bash
+liam@ssc:~$ elabftw-list Liam
+163: test fake experiment without json metadata (Liam Keegan, 2021-10-07)
+156: test fake experiment with json metadata (Liam Keegan, 2021-10-01)
 ```
