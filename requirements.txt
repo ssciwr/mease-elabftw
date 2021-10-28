@@ -1,4 +1,5 @@
+click
 elabapy
 pynwb
-setuptools
 requests
+setuptools
