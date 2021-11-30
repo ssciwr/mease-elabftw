@@ -1,24 +1,35 @@
 import pytest
 import mease_elabftw
 import test_ids
+import json
 
 
 def test_get_linked_items():
     items = mease_elabftw.get_linked_items(test_ids.valid_experiment)
-    assert len(items) == 4
+    assert len(items) == 5
+    # dye
     assert items[0]["category"] == "dye"
     assert items[0]["title"] == "DiO green"
     d = items[0]["data_dict"]
     assert len(d.items()) == 2
     assert d["origin"] == "ThermoFisher"
     assert d["catalog number"] == "V22886"
+    # mouse line
     assert items[1]["category"] == "mouse line"
     assert items[1]["title"] == "wild type"
     d = items[1]["data_dict"]
     assert len(d.items()) == 6
-    assert items[3]["category"] == "virus"
-    assert items[3]["title"] == "AAVretr Flpo"
-    d = items[3]["data_dict"]
+    # silicon probe
+    assert items[2]["category"] == "silicon probe"
+    assert items[2]["title"] == "Untitled"
+    print(items[2])
+    d = json.loads(items[2].get("metadata", "{}")).get("extra_fields")
+    assert d["ElectrodeGroup.name"]["value"] == "H3"
+    assert d["ElectrodeGroup.location"]["value"] == "S1"
+    # virus
+    assert items[4]["category"] == "virus"
+    assert items[4]["title"] == "AAVretr Flpo"
+    d = items[4]["data_dict"]
     assert len(d.items()) == 5
     assert d["Virus in -80 storage"] == "AAVretr EF1a-Flpo"
 
