@@ -12,7 +12,7 @@ def get_nwb_metadata(experiment_id):
     metadata["NWBFile"]["session_description"] = experiment["title"]
     metadata["NWBFile"]["identifier"] = experiment["elabid"]
     metadata["NWBFile"]["session_start_time"] = experiment["datetime"]
-    metadata["NWBFile"]["experimenter"] = experiment["fullname"]
+    metadata["NWBFile"]["experimenter"] = [experiment["fullname"]]
     metadata["NWBFile"][
         "institution"
     ] = "Heidelberg University, Physiology and Pathophysiology"
