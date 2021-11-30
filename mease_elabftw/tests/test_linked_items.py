@@ -5,7 +5,7 @@ import test_ids
 
 def test_get_linked_items():
     items = mease_elabftw.get_linked_items(test_ids.valid_experiment)
-    assert len(items) == 3
+    assert len(items) == 4
     assert items[0]["category"] == "dye"
     assert items[0]["title"] == "DiO green"
     d = items[0]["data_dict"]
@@ -16,9 +16,9 @@ def test_get_linked_items():
     assert items[1]["title"] == "wild type"
     d = items[1]["data_dict"]
     assert len(d.items()) == 6
-    assert items[2]["category"] == "virus"
-    assert items[2]["title"] == "AAVretr Flpo"
-    d = items[2]["data_dict"]
+    assert items[3]["category"] == "virus"
+    assert items[3]["title"] == "AAVretr Flpo"
+    d = items[3]["data_dict"]
     assert len(d.items()) == 5
     assert d["Virus in -80 storage"] == "AAVretr EF1a-Flpo"
 
