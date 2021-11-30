@@ -4,6 +4,13 @@ from .util import get_experiment
 import json
 
 
+def dict_to_string(dict):
+    str = ""
+    for key, value in dict.items():
+        str += f"  * {key}: {value}\n"
+    return str
+
+
 def get_nwb_metadata(experiment_id):
     experiment = get_experiment(experiment_id)
     metadata = get_metadata(experiment_id)
@@ -21,8 +28,12 @@ def get_nwb_metadata(experiment_id):
         category = item["category"]
         if category == "virus":
             virus = metadata["NWBFile"].get("virus", "")
-            virus += f"{item['title']}:\n"
-            for key, value in item["data_dict"].items():
-                virus += f"  * {key}: {value}\n"
+            virus += f"{item['title']}:\n{dict_to_string(item['data_dict'])}"
             metadata["NWBFile"]["virus"] = virus
+        elif category == "silicon probe":
+            f = json.loads(item.get("metadata", "{}")).get("extra_fields")
+            metadata["Ecephys"]["ElectrodeGroup"] = {
+                "name": f["ElectrodeGroup.name"]["value"],
+                "location": f["ElectrodeGroup.location"]["value"],
+            }
     return metadata
