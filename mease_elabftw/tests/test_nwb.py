@@ -23,3 +23,8 @@ def test_get_nwb_metadata():
     assert len(viri) == 13
     assert viri[0] == "AAVretr ChR2-tdTomato:"
     assert viri[6] == "AAVretr Flpo:"
+    ecephys = data.get("Ecephys")
+    assert len(ecephys["ElectrodeGroup"]) == 1
+    electrode_group = ecephys["ElectrodeGroup"][0]
+    assert electrode_group["name"] == "H3"
+    assert electrode_group["location"] == "S1"
