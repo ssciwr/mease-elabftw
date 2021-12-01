@@ -32,10 +32,16 @@ def get_nwb_metadata(experiment_id):
             metadata["NWBFile"]["virus"] = virus
         elif category == "silicon probe":
             f = json.loads(item.get("metadata", "{}")).get("extra_fields")
+            # add a dummy device for now
+            metadata["Ecephys"]["Device"] = [
+                {"description": "no description", "name": "Device_ecephys"}
+            ]
             metadata["Ecephys"]["ElectrodeGroup"] = [
                 {
                     "name": f["ElectrodeGroup.name"]["value"],
                     "location": f["ElectrodeGroup.location"]["value"],
+                    "description": f["ElectrodeGroup.description"]["value"],
+                    "device": "Device_ecephys",
                 }
             ]
     return metadata
