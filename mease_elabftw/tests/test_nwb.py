@@ -1,6 +1,9 @@
 import pytest
 import mease_elabftw
 import test_ids
+from pathlib import Path
+import json
+import jsonschema
 
 
 def test_get_nwb_metadata():
@@ -28,3 +31,10 @@ def test_get_nwb_metadata():
     electrode_group = ecephys["ElectrodeGroup"][0]
     assert electrode_group["name"] == "H3"
     assert electrode_group["location"] == "S1"
+    # validate json using nwb schema
+    schema_file_path = (
+        Path(__file__).parent / "metadata_ecephys.schema.json"
+    ).resolve()
+    with schema_file_path.open() as schema_file:
+        print(data)
+        jsonschema.validate(instance=data, schema=json.load(schema_file))
