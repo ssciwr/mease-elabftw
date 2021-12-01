@@ -8,7 +8,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="mease_elabftw",
-    version="0.0.1",
+    version="0.0.2",
     author="Liam Keegan",
     author_email="liam@keegan.ch",
     description="Extracts metadata from eLabFTW experiments",
