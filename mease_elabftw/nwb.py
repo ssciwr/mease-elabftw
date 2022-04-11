@@ -29,7 +29,7 @@ def get_nwb_metadata(experiment_id):
 
     :param experiment_id: The experiment id given by the user.
     :type experiment_id: int
-    :return: Nested dictionary with all requiered metadata.
+    :return: Nested dictionary with all required metadata.
     :rtype: dict
     """
 

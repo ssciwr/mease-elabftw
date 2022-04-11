@@ -8,6 +8,8 @@ def list_experiments(owner=""):
     """
     Filter experiments by owner.
 
+    If no owner is specified, returns all experiments.
+
     :param owner: Fullname of the experiment author, defaults to ""
     :type owner: str, optional
     :return: id, title, fullname and date of all applicable experiments.
@@ -49,7 +51,6 @@ def upload_file(experiment_id, filename):
             )
             return upload_id
         else:
-            # potentially improve this error message if status.get("result") reports more information?
             raise RuntimeError(
                 f"Could not upload file {filename} to experiment {experiment_id}"
             )
