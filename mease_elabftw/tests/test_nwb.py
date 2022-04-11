@@ -64,13 +64,13 @@ def test_NWB_creation(tmp_path):
     file = tmp_path / "test.nwb"
     io = NWBHDF5IO(file, mode="w")
     io.write(nwbfile)
-
     # This validate function behaves a bit unintuitively, when everything is fine it returns an empty list,
     # if not it raises an exception or returns a list of warnings.
     if validate(io) != []:
         raise Exception(
             f"nwbfile could not be validated, raised errors are {validate(io)}"
         )
+    io.close()
 
     # a simple assertion of the fied and our previously created dict is not possible as pynwb creates additional fields.
     # Because of this only keys in the original dict are compared. The time series has to be excluded as it is also altered by pynwb.
