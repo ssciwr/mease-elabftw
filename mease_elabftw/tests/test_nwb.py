@@ -4,6 +4,9 @@ import test_ids
 from pathlib import Path
 import json
 import jsonschema
+from pynwb import NWBFile, validate, NWBHDF5IO
+from datetime import datetime
+from dateutil import tz
 
 
 def test_get_nwb_metadata():
@@ -46,3 +49,31 @@ def test_get_nwb_metadata():
     with schema_file_path.open() as schema_file:
         print(data)
         jsonschema.validate(instance=data, schema=json.load(schema_file))
+
+
+def test_NWB_creation(tmp_path):
+    data = mease_elabftw.get_nwb_metadata(test_ids.valid_experiment)
+    nwbfile_dict = data.get("NWBFile")
+    # pynwb only takes session_start_time as a datetime object.
+    nwbfile_dict["session_start_time"] = datetime.fromisoformat(
+        nwbfile_dict["session_start_time"]
+    )
+
+    nwbfile = NWBFile(**nwbfile_dict)
+    # write the nwbfile to the plate, this is necessary for the validation.
+    file = tmp_path / "test.nwb"
+    io = NWBHDF5IO(file, mode="w")
+    io.write(nwbfile)
+
+    # This validate function behaves a bit unintuitively, when everything is fine it returns an empty list,
+    # if not it raises an exception or returns a list of warnings.
+    if validate(io) != []:
+        raise Exception(
+            f"nwbfile could not be validated, raised errors are {validate(io)}"
+        )
+
+    # a simple assertion of the fied and our previously created dict is not possible as pynwb creates additional fields.
+    # Because of this only keys in the original dict are compared. The time series has to be excluded as it is also altered by pynwb.
+    for key in nwbfile_dict.keys():
+        if key != "session_start_time":
+            assert nwbfile.fields[key] == nwbfile_dict[key]
