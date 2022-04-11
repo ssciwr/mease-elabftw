@@ -3,12 +3,14 @@
 [![tests](https://github.com/ssciwr/mease-elabftw/workflows/Tests/badge.svg)](https://github.com/ssciwr/mease-elabftw/actions?query=workflow%3ATests)
 [![codecov](https://codecov.io/gh/ssciwr/mease-elabftw/branch/main/graph/badge.svg?token=xJTHCFXzrz)](https://codecov.io/gh/ssciwr/mease-elabftw)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ssciwr_mease-elabftw&metric=alert_status)](https://sonarcloud.io/dashboard?id=ssciwr_mease-elabftw)
+[![Documentation Status](https://readthedocs.org/projects/mease-elabftw/badge/?version=latest)](https://mease-elabftw.readthedocs.io/en/latest/?badge=latest)
 
-Python library for extracting
-[metadata](https://doc.elabftw.net/metadata.html) from
-[eLabFTW](https://www.elabftw.net/) experiments and converting it to
-[NWB](https://nwb-schema.readthedocs.io/en/latest/) metadata, for use with
-the [mease-lab-to-nwb](https://github.com/ssciwr/mease-lab-to-nwb) SpikeInterface pipeline.
+Python library for interacting with [eLabFTW](https://www.elabftw.net/) experiments:
+
+- Create [NWB](https://nwb-schema.readthedocs.io/en/latest/) metadata from an eLabFTW experiment
+- Extract [metadata](https://doc.elabftw.net/metadata.html) from linked database items
+- Upload files (e.g. analysis result from HPC) to an eLabFTW experiment
+- List eLabFTW experiments from the command line
 
 ## Setup
 

@@ -1,3 +1,4 @@
 jsonschema
+pynwb
 pytest
 pytest-cov
