@@ -4,11 +4,11 @@ from .util import get_experiment
 
 def get_metadata(experiment_id):
     """
-    Get the experiment metadata corresponding to the given ID through the elabapy Manager.
+    Get the experiment metadata corresponding to the given id through the elabapy Manager.
 
-    :param experiment_id: user defined experiment ID
+    :param experiment_id: User defined experiment id
     :type experiment_id: int
-    :return: experiment metaata
+    :return: Experiment metadata
     :rtype: dict
     """
     experiment = get_experiment(experiment_id)

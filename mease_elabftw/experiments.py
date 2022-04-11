@@ -5,11 +5,12 @@ import os
 
 
 def list_experiments(owner=""):
-    """Filter experiments by owner.
+    """
+    Filter experiments by owner.
 
     :param owner: Fullname of the experiment author, defaults to ""
     :type owner: str, optional
-    :return: Id, title, fullname and date of all applicable experiments.
+    :return: id, title, fullname and date of all applicable experiments.
     :rtype: list of str
     """
     output = []
@@ -33,7 +34,7 @@ def upload_file(experiment_id, filename):
     :param filename: Filename to store on the server.
     :type filename: str
     :raises RuntimeError: Raise error if upload is not possible.
-    :return: The upload ID.
+    :return: The upload id.
     :rtype: int
     """
 

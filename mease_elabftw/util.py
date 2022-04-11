@@ -7,7 +7,7 @@ url = "https://elabftw.uni-heidelberg.de"
 
 def handle_http_error(http_error, experiment_id=None):
     """
-    unified error hanlding, for http and wrong id errors.
+    Unified error hanlding, for http and wrong id errors.
 
     :param http_error: Error object.
     :type http_error: HTTPError
@@ -42,9 +42,9 @@ def get_manager():
 
 def get_experiment(experiment_id):
     """
-    Get the experiment corresponding to the given ID through the elabapy Manager.
+    Get the experiment corresponding to the given id through the elabapy Manager.
 
-    :param experiment_id: user defined experiment ID.
+    :param experiment_id: user defined experiment id.
     :type experiment_id: int
     :return: Experiment Data
     :rtype: dict
@@ -65,10 +65,11 @@ def get_item(item_id):
 
 
 def get_experiments():
-    """get all experiments accesible with the current token.
+    """
+    Get all experiments accesible with the current token.
 
     :return: All experiments
-    :rtype: list?
+    :rtype: list of dict
     """
     manager = get_manager()
     try:

@@ -4,9 +4,9 @@ from .parsing import html_to_dict
 
 def get_linked_items(experiment_id):
     """
-    iterate over all links present in the experiment and collect item information.
+    Iterate over all links present in the experiment and collect item information.
 
-    :param experiment_id: The experiment number given by the user.
+    :param experiment_id: The experiment id given by the user.
     :type experiment_id: int
     :return: All the linked items.
     :rtype: list of dict
