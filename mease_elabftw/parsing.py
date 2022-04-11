@@ -20,5 +20,6 @@ def html_to_dict(html):
     d = dict()
     for string in html_to_strings(html):
         pair = string.split(":")
-        d[pair[0].strip()] = pair[1].strip()
+        if len(pair) > 1:
+            d[pair[0].strip()] = pair[1].strip()
     return d

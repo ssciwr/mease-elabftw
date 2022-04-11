@@ -6,7 +6,7 @@ import json
 
 def test_get_linked_items():
     items = mease_elabftw.get_linked_items(test_ids.valid_experiment)
-    assert len(items) == 6
+    assert len(items) == 7
     # dye
     assert items[0]["category"] == "dye"
     assert items[0]["title"] == "DiO green"
@@ -14,21 +14,26 @@ def test_get_linked_items():
     assert len(d.items()) == 2
     assert d["origin"] == "ThermoFisher"
     assert d["catalog number"] == "V22886"
+    # mouse
+    assert items[1]["category"] == "mouse"
+    assert items[1]["title"] == "my new mouse"
+    d = json.loads(items[1].get("metadata", "{}")).get("extra_fields")
+    assert len(d.items()) == 6
     # mouse line
     assert items[2]["category"] == "mouse line"
     assert items[2]["title"] == "wild type"
     d = items[2]["data_dict"]
     assert len(d.items()) == 6
     # silicon probe
-    assert items[3]["category"] == "silicon probe"
-    assert items[3]["title"] == "Untitled"
-    d = json.loads(items[3].get("metadata", "{}")).get("extra_fields")
+    assert items[4]["category"] == "silicon probe"
+    assert items[4]["title"] == "Untitled"
+    d = json.loads(items[4].get("metadata", "{}")).get("extra_fields")
     assert d["ElectrodeGroup.name"]["value"] == "H3"
     assert d["ElectrodeGroup.location"]["value"] == "S1"
     # virus
-    assert items[5]["category"] == "virus"
-    assert items[5]["title"] == "AAVretr Flpo"
-    d = items[5]["data_dict"]
+    assert items[6]["category"] == "virus"
+    assert items[6]["title"] == "AAVretr Flpo"
+    d = items[6]["data_dict"]
     assert len(d.items()) == 5
     assert d["Virus in -80 storage"] == "AAVretr EF1a-Flpo"
 
