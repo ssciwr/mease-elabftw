@@ -6,6 +6,8 @@ import os
 
 def list_experiments(owner=""):
     """Filter experiments by owner.
+    
+    If no owner is specified, returns all experiments.
 
     :param owner: Fullname of the experiment author, defaults to ""
     :type owner: str, optional
