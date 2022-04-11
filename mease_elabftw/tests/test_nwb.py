@@ -8,7 +8,9 @@ import jsonschema
 
 def test_get_nwb_metadata():
     data = mease_elabftw.get_nwb_metadata(test_ids.valid_experiment)
-    assert len(data.keys()) == 3
+    assert len(data.keys()) == 4
+
+    # NWBFile section
     nwbfile = data.get("NWBFile")
     assert len(nwbfile) == 7
     assert nwbfile["session_description"] == "test fake experiment with json metadata"
@@ -26,12 +28,18 @@ def test_get_nwb_metadata():
     assert len(viri) == 13
     assert viri[0] == "AAVretr ChR2-tdTomato:"
     assert viri[6] == "AAVretr Flpo:"
-    ecephys = data.get("Ecephys")
-    assert len(ecephys["ElectrodeGroup"]) == 1
-    electrode_group = ecephys["ElectrodeGroup"][0]
-    assert electrode_group["name"] == "H3"
-    assert electrode_group["location"] == "S1"
-    # validate json using nwb schema
+
+    # Subject section
+    subject = data.get("Subject")
+    assert subject["sex"] == "unknown"
+    assert subject["weight"] == "2"
+    assert subject["genotype"] == "Nt1Cre-ChR2-EYFP"
+    assert subject["subject_id"] == "xy1"
+    assert subject["description"] == "test mouse"
+
+    # Validate json using nwb schema
+    # (remove "Other" section before validating)
+    del data["Other"]
     schema_file_path = (
         Path(__file__).parent / "metadata_ecephys.schema.json"
     ).resolve()
