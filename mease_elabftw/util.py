@@ -6,6 +6,14 @@ url = "https://elabftw.uni-heidelberg.de"
 
 
 def handle_http_error(http_error, experiment_id=None):
+    """
+    unified error hanlding, for http and wrong id errors.
+
+    :param http_error: Error object.
+    :type http_error: HTTPError
+    :param experiment_id: The experiment number given by the user for which an error was raised. , defaults to None
+    :type experiment_id: int, optional
+    """
     if http_error.response.status_code == 400:
         raise RuntimeError(f"Could not connect to {url} - do you have a valid token?")
     elif experiment_id is not None and http_error.response.status_code == 403:
@@ -17,6 +25,13 @@ def handle_http_error(http_error, experiment_id=None):
 
 
 def get_manager():
+    """
+    Verify that a token is given and creates an elabapy Manager object.
+
+    :raises RuntimeError: Error when no token is in the env variables.
+    :return: The manager object to collect the data.
+    :rtype: elabapy.Manager
+    """
     token = os.environ.get("ELABFTW_TOKEN")
     if token is None:
         raise RuntimeError(
@@ -26,6 +41,14 @@ def get_manager():
 
 
 def get_experiment(experiment_id):
+    """
+    Get the experiment corresponding to the given ID through the elabapy Manager.
+
+    :param experiment_id: user defined experiment ID.
+    :type experiment_id: int
+    :return: Experiment Data
+    :rtype: dict
+    """
     manager = get_manager()
     try:
         return manager.get_experiment(experiment_id)
@@ -42,6 +65,11 @@ def get_item(item_id):
 
 
 def get_experiments():
+    """get all experiments accesible with the current token.
+
+    :return: All experiments
+    :rtype: list?
+    """
     manager = get_manager()
     try:
         # note: offset is ignored, so for now just setting limit to a large value and making a single request

@@ -5,6 +5,13 @@ import os
 
 
 def list_experiments(owner=""):
+    """Filter experiments by owner.
+
+    :param owner: Fullname of the experiment author, defaults to ""
+    :type owner: str, optional
+    :return: Id, title, fullname and date of all applicable experiments.
+    :rtype: list of str
+    """
     output = []
     experiments = get_experiments()
     for e in experiments:
@@ -18,6 +25,18 @@ def list_experiments(owner=""):
 
 
 def upload_file(experiment_id, filename):
+    """
+    Upload a file to the web service under a specific experiment id.
+
+    :param experiment_id: The experiment id given by the user.
+    :type experiment_id: int
+    :param filename: Filename to store on the server.
+    :type filename: str
+    :raises RuntimeError: Raise error if upload is not possible.
+    :return: The upload ID.
+    :rtype: int
+    """
+
     manager = get_manager()
     try:
         with open(os.path.join(os.getcwd(), filename), "r+b") as f:
@@ -29,6 +48,7 @@ def upload_file(experiment_id, filename):
             )
             return upload_id
         else:
+            # potentially improve this error message if status.get("result") reports more information?
             raise RuntimeError(
                 f"Could not upload file {filename} to experiment {experiment_id}"
             )
