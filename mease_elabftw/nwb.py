@@ -5,6 +5,16 @@ import json
 
 
 def dict_to_string(dict):
+    """
+    Custom conversion method for dict to string.
+    This adds a bullet point and line break to the dict.
+
+
+    :param dict: A dict used to store metadata.
+    :type dict: dict
+    :return: The dict as a string with added * for seperation
+    :rtype: str
+    """
     str = ""
     for key, value in dict.items():
         str += f"  * {key}: {value}\n"
@@ -12,9 +22,21 @@ def dict_to_string(dict):
 
 
 def get_nwb_metadata(experiment_id):
+    """
+    Collect metadata information from the given experiment id.
+    Ensure data is stored under the correct keys.
+
+
+    :param experiment_id: The experiment id given by the user.
+    :type experiment_id: int
+    :return: Nested dictionary with all required metadata.
+    :rtype: dict
+    """
+
     experiment = get_experiment(experiment_id)
     expmetadata = get_metadata(experiment_id)
     linked_items = get_linked_items(experiment_id)
+
     metadata = {
         "NWBFile": dict(),
         "Subject": dict(),

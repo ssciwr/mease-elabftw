@@ -3,6 +3,14 @@ from .util import get_experiment
 
 
 def get_metadata(experiment_id):
+    """
+    Get the experiment metadata corresponding to the given id through the elabapy Manager.
+
+    :param experiment_id: User defined experiment id
+    :type experiment_id: int
+    :return: Experiment metadata
+    :rtype: dict
+    """
     experiment = get_experiment(experiment_id)
     metadata = json.loads(experiment.get("metadata", "{}")).get("extra_fields")
     if not metadata:
