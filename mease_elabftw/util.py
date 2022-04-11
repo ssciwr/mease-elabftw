@@ -5,10 +5,10 @@ from requests.exceptions import HTTPError
 url = "https://elabftw.uni-heidelberg.de"
 
 
-def handle_http_error(http_error, experiment_id):
+def handle_http_error(http_error, experiment_id=None):
     if http_error.response.status_code == 400:
         raise RuntimeError(f"Could not connect to {url} - do you have a valid token?")
-    elif http_error.response.status_code == 403:
+    elif experiment_id is not None and http_error.response.status_code == 403:
         raise RuntimeError(
             f"Experiment with id {experiment_id} not found - do you have the correct id?"
         )
@@ -47,9 +47,4 @@ def get_experiments():
         # note: offset is ignored, so for now just setting limit to a large value and making a single request
         return manager.get_all_experiments({"limit": 999, "offset": 0})
     except HTTPError as e:
-        if e.response.status_code == 400:
-            raise RuntimeError(
-                f"Could not connect to {url} - do you have a valid token?"
-            )
-        else:
-            raise e
+        handle_http_error(e)
