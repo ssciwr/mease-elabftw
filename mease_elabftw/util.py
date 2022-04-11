@@ -44,7 +44,7 @@ def get_experiment(experiment_id):
     """
     Get the experiment corresponding to the given id through the elabapy Manager.
 
-    :param experiment_id: user defined experiment id.
+    :param experiment_id: User defined experiment id.
     :type experiment_id: int
     :return: Experiment Data
     :rtype: dict
