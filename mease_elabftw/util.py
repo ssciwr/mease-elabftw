@@ -7,7 +7,7 @@ url = "https://elabftw.uni-heidelberg.de"
 
 def handle_http_error(http_error, experiment_id=None):
     """
-    unified error hanlding, for http and wrong id errors.
+    unified error handling, for http and wrong id errors.
 
     :param http_error: Error object.
     :type http_error: HTTPError
