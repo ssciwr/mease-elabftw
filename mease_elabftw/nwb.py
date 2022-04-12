@@ -1,9 +1,8 @@
 from .metadata import get_metadata
 from .linked_items import get_linked_items
-from .util import get_experiment
+from .util import get_experiment, convert_weight
 import json
 from datetime import datetime
-import re
 
 
 def dict_to_string(dict):
@@ -80,30 +79,7 @@ def get_nwb_metadata(experiment_id):
                     )
                 # Mouse weight must always be given in g and is automatically converted to kg for pynwb.
                 elif key.split(".")[1] == "weight":
-                    weight_str = value["value"].lower()
-
-                    # Check if letters are present in string:
-                    if (
-                        weight_str.islower()
-                    ):  # Not sure how to test this as I can't put a letter in the mouse file.
-
-                        weight_str, unit_str = re.split(
-                            r"([a-z])", weight_str, 1, flags=re.I
-                        )
-                        weight_str = weight_str.strip()
-                        unit_str = unit_str.strip()
-                        if unit_str == "g" or unit_str == "kg":
-                            weight_str = weight_str + " " + unit_str
-
-                        else:
-                            # add this to loggs
-                            weight_str = weight_str + " g"
-
-                    # if no letters are present strip white space and add " g" for grams.
-                    else:
-                        weight_str = weight_str.strip()
-                        weight_str = weight_str + " g"
-
+                    weight_str = convert_weight(value["value"])
                     metadata["Subject"][key.split(".")[1]] = weight_str
 
                 else:
