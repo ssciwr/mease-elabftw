@@ -46,8 +46,8 @@ def get_nwb_metadata(experiment_id):
     }
     metadata["NWBFile"]["session_description"] = experiment["title"]
     metadata["NWBFile"]["identifier"] = experiment["elabid"]
-    # session start time needs to be converted to datatime for pynwb
-    # this conversion loggs a warning, as no timezone is specified. It assumes local time, which is fine for now.
+    # Session start time needs to be converted to datatime for pynwb.
+    # This conversion loggs a warning, as no timezone is specified. It assumes local time, which is fine for now.
     metadata["NWBFile"]["session_start_time"] = datetime.fromisoformat(
         experiment["datetime"]
     )
@@ -66,11 +66,17 @@ def get_nwb_metadata(experiment_id):
             f = json.loads(item.get("metadata", "{}")).get("extra_fields")
             for key, value in f.items():
                 print(key, value["value"])
-                # date of birth needs to be converted to datetime
+                # Date of birth needs to be converted to datetime.
                 if key.split(".")[1] == "date_of_birth":
                     metadata["Subject"][key.split(".")[1]] = datetime.fromisoformat(
                         value["value"]
                     )
+                # Mouse weight must always be given in g and is automatically converted to kg for pynwb.
+                if key.split(".")[1] == "weight":
+                    metadata["Subject"][key.split(".")[1]] = (
+                        float(value["value"]) / 1000
+                    )
+
                 else:
                     metadata["Subject"][key.split(".")[1]] = value["value"]
         elif category == "silicon probe":
