@@ -3,9 +3,10 @@ from .linked_items import get_linked_items
 from .util import get_experiment, convert_weight
 import json
 from datetime import datetime
-import logging
 
-logger = logging.getLogger("mease-elabftw")
+from .logger import getLogger
+
+logger = getLogger("mease-elabftw")
 
 
 def dict_to_string(dict):
@@ -46,6 +47,7 @@ def get_nwb_metadata(experiment_id):
     experiment = get_experiment(experiment_id)
     expmetadata = get_metadata(experiment_id)
     linked_items = get_linked_items(experiment_id)
+
     logger.info(f"Begin metadata collection of experiment id: {experiment_id}")
     logger.debug(f"Collected experiment:  \n \t{json.dumps(experiment, indent = 4)}")
 

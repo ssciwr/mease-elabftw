@@ -1,11 +1,11 @@
 import elabapy
 import os
 from requests.exceptions import HTTPError
-import logging
 import re
 import numbers
+from .logger import getLogger
 
-logger = logging.getLogger("mease-elabftw")
+logger = getLogger("mease-elabftw")
 
 url = "https://elabftw.uni-heidelberg.de"
 
