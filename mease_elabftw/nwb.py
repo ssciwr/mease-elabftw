@@ -69,6 +69,7 @@ def get_nwb_metadata(experiment_id):
         + ")"
     )
 
+
     metadata["NWBFile"]["session_start_time"] = datetime.fromisoformat(
         experiment["datetime"]
     )
