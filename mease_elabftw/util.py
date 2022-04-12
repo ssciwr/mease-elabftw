@@ -4,6 +4,8 @@ from requests.exceptions import HTTPError
 import logging
 
 logger = logging.getLogger("mease-elabftw")
+import re
+import numbers
 
 url = "https://elabftw.uni-heidelberg.de"
 
@@ -85,3 +87,30 @@ def get_experiments():
         return manager.get_all_experiments({"limit": 999, "offset": 0})
     except HTTPError as e:
         handle_http_error(e)
+
+
+def convert_weight(weight_str):
+    if isinstance(weight_str, numbers.Number):
+        weight_str = str(weight_str)
+
+    weight_str = weight_str.lower()
+
+    # Check if letters are present in string:
+    if weight_str.islower():
+
+        weight_str, unit_str, _ = re.split(r"([a-z])", weight_str, 1, flags=re.I)
+
+        weight_str = weight_str.strip()
+        unit_str = unit_str.strip()
+        if unit_str == "g" or unit_str == "kg":
+            weight_str = weight_str + " " + unit_str
+
+        else:
+            # add this to loggs
+            weight_str = weight_str + " g"
+
+    # if no letters are present strip white space and add " g" for grams.
+    else:
+        weight_str = weight_str.strip()
+        weight_str = weight_str + " g"
+    return weight_str

@@ -1,6 +1,6 @@
 from .metadata import get_metadata
 from .linked_items import get_linked_items
-from .util import get_experiment
+from .util import get_experiment, convert_weight
 import json
 from datetime import datetime
 import logging
@@ -29,6 +29,12 @@ def get_nwb_metadata(experiment_id):
     """
     Collect metadata information from the given experiment id.
     Ensure data is stored under the correct keys.
+
+    Note for special cases:
+    - session_start_time will be converted to datetime.datetime object.
+    - subject.date_of_birth will be converted to datetime.datetime object.
+    - subject.weight will be converted into string with unit attached.
+
 
 
     :param experiment_id: The experiment id given by the user.
@@ -81,7 +87,7 @@ def get_nwb_metadata(experiment_id):
             f = json.loads(item.get("metadata", "{}")).get("extra_fields")
             for key, value in f.items():
                 print(key, value["value"])
-                # date of birth needs to be converted to datetime
+                # Date of birth needs to be converted to datetime.
                 if key.split(".")[1] == "date_of_birth":
                     logger.info(
                         f"mouse date of birth  will be converted from string to datetime. \n From "
@@ -94,6 +100,11 @@ def get_nwb_metadata(experiment_id):
                     metadata["Subject"][key.split(".")[1]] = datetime.fromisoformat(
                         value["value"]
                     )
+                # Mouse weight must always be given in g and is automatically converted to kg for pynwb.
+                elif key.split(".")[1] == "weight":
+                    weight_str = convert_weight(value["value"])
+                    metadata["Subject"][key.split(".")[1]] = weight_str
+
                 else:
                     metadata["Subject"][key.split(".")[1]] = value["value"]
         elif category == "silicon probe":
