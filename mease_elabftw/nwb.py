@@ -28,6 +28,12 @@ def get_nwb_metadata(experiment_id):
     Collect metadata information from the given experiment id.
     Ensure data is stored under the correct keys.
 
+    Note for special cases:
+    - session_start_time will be converted to datetime.datetime object.
+    - subject.date_of_birth will be converted to datetime.datetime object.
+    - subject.weight will be converted into string with unit attached.
+
+
 
     :param experiment_id: The experiment id given by the user.
     :type experiment_id: int
