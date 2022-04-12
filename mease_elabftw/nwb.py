@@ -72,7 +72,7 @@ def get_nwb_metadata(experiment_id):
                         value["value"]
                     )
                 # Mouse weight must always be given in g and is automatically converted to kg for pynwb.
-                if key.split(".")[1] == "weight":
+                elif key.split(".")[1] == "weight":
                     metadata["Subject"][key.split(".")[1]] = (
                         float(value["value"]) / 1000
                     )
