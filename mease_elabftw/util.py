@@ -4,6 +4,7 @@ from requests.exceptions import HTTPError
 import logging
 import re
 import numbers
+
 logger = logging.getLogger("mease-elabftw")
 
 url = "https://elabftw.uni-heidelberg.de"
