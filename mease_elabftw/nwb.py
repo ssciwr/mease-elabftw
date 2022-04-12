@@ -71,7 +71,6 @@ def get_nwb_metadata(experiment_id):
         elif category == "mouse":
             f = json.loads(item.get("metadata", "{}")).get("extra_fields")
             for key, value in f.items():
-                print(key, value["value"])
                 # Date of birth needs to be converted to datetime.
                 if key.split(".")[1] == "date_of_birth":
                     metadata["Subject"][key.split(".")[1]] = datetime.fromisoformat(
