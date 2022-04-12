@@ -1,6 +1,6 @@
 from .metadata import get_metadata
 from .linked_items import get_linked_items
-from .util import get_experiment
+from .util import get_experiment, convert_weight
 import json
 from datetime import datetime
 
@@ -27,6 +27,12 @@ def get_nwb_metadata(experiment_id):
     Collect metadata information from the given experiment id.
     Ensure data is stored under the correct keys.
 
+    Note for special cases:
+    - session_start_time will be converted to datetime.datetime object.
+    - subject.date_of_birth will be converted to datetime.datetime object.
+    - subject.weight will be converted into string with unit attached.
+
+
 
     :param experiment_id: The experiment id given by the user.
     :type experiment_id: int
@@ -46,8 +52,8 @@ def get_nwb_metadata(experiment_id):
     }
     metadata["NWBFile"]["session_description"] = experiment["title"]
     metadata["NWBFile"]["identifier"] = experiment["elabid"]
-    # session start time needs to be converted to datatime for pynwb
-    # this conversion loggs a warning, as no timezone is specified. It assumes local time, which is fine for now.
+    # Session start time needs to be converted to datatime for pynwb.
+    # This conversion loggs a warning, as no timezone is specified. It assumes local time, which is fine for now.
     metadata["NWBFile"]["session_start_time"] = datetime.fromisoformat(
         experiment["datetime"]
     )
@@ -66,11 +72,16 @@ def get_nwb_metadata(experiment_id):
             f = json.loads(item.get("metadata", "{}")).get("extra_fields")
             for key, value in f.items():
                 print(key, value["value"])
-                # date of birth needs to be converted to datetime
+                # Date of birth needs to be converted to datetime.
                 if key.split(".")[1] == "date_of_birth":
                     metadata["Subject"][key.split(".")[1]] = datetime.fromisoformat(
                         value["value"]
                     )
+                # Mouse weight must always be given in g and is automatically converted to kg for pynwb.
+                elif key.split(".")[1] == "weight":
+                    weight_str = convert_weight(value["value"])
+                    metadata["Subject"][key.split(".")[1]] = weight_str
+
                 else:
                     metadata["Subject"][key.split(".")[1]] = value["value"]
         elif category == "silicon probe":
