@@ -18,7 +18,9 @@ def test_get_nwb_metadata():
     assert len(nwbfile) == 7
     assert nwbfile["session_description"] == "test fake experiment with json metadata"
     assert nwbfile["identifier"] == "20211001-8b6f100d66f4312d539c52620f79d6a503c1e2d1"
-    assert nwbfile["session_start_time"] == "2021-10-01 11:13:47"
+    assert nwbfile["session_start_time"] == datetime.fromisoformat(
+        "2021-10-01 11:13:47"
+    )
     assert len(nwbfile["experimenter"]) == 1
     assert nwbfile["experimenter"][0] == "Liam Keegan"
     assert (
@@ -39,8 +41,17 @@ def test_get_nwb_metadata():
     assert subject["genotype"] == "Nt1Cre-ChR2-EYFP"
     assert subject["subject_id"] == "xy1"
     assert subject["description"] == "test mouse"
-
+    assert subject["date_of_birth"] == datetime.fromisoformat("2000-01-01")
     # Validate json using nwb schema
+
+    # convert datetime to str for json validation
+    data["NWBFile"]["session_start_time"] = data["NWBFile"][
+        "session_start_time"
+    ].strftime("%Y-%m-%d %H:%M%S")
+    data["Subject"]["date_of_birth"] = data["Subject"]["date_of_birth"].strftime(
+        "%Y-%m-%d"
+    )
+
     # (remove "Other" section before validating)
     del data["Other"]
     schema_file_path = (
@@ -55,12 +66,12 @@ def test_NWB_creation(tmp_path):
     data = mease_elabftw.get_nwb_metadata(test_ids.valid_experiment)
     nwbfile_dict = data.get("NWBFile")
     # pynwb only takes session_start_time as a datetime object.
-    nwbfile_dict["session_start_time"] = datetime.fromisoformat(
-        nwbfile_dict["session_start_time"]
-    )
-
+    # nwbfile_dict["session_start_time"] = datetime.fromisoformat(
+    #     nwbfile_dict["session_start_time"]
+    # )
     nwbfile = NWBFile(**nwbfile_dict)
     # write the nwbfile to the plate, this is necessary for the validation.
+
     file = tmp_path / "test.nwb"
     io = NWBHDF5IO(file, mode="w")
     io.write(nwbfile)
