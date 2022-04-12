@@ -37,7 +37,7 @@ def test_get_nwb_metadata():
     # Subject section
     subject = data.get("Subject")
     assert subject["sex"] == "unknown"
-    assert subject["weight"] == 0.002  # weight in kg
+    assert subject["weight"] == "2 g"
     assert subject["genotype"] == "Nt1Cre-ChR2-EYFP"
     assert subject["subject_id"] == "xy1"
     assert subject["description"] == "test mouse"
