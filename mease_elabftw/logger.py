@@ -4,6 +4,7 @@ import os
 # enable logging or not
 
 use_logger = True
+log_level = logging.DEBUG
 
 
 def getLogger(
@@ -25,7 +26,7 @@ def getLogger(
         logger.addHandler(handler)
 
         # This determines the final state of the logger.
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(log_level)
 
     # if logging is disabled we use a dummy logger with no output.
     else:
