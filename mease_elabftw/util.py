@@ -1,6 +1,9 @@
 import elabapy
 import os
 from requests.exceptions import HTTPError
+import logging
+
+logger = logging.getLogger("mease-elabftw")
 
 url = "https://elabftw.uni-heidelberg.de"
 
@@ -15,11 +18,14 @@ def handle_http_error(http_error, experiment_id=None):
     :type experiment_id: int, optional
     """
     if http_error.response.status_code == 400:
-        raise RuntimeError(f"Could not connect to {url} - do you have a valid token?")
+        message = f"Could not connect to {url} - do you have a valid token?"
+        logger.error(message)
+        raise RuntimeError(message)
     elif experiment_id is not None and http_error.response.status_code == 403:
-        raise RuntimeError(
-            f"Experiment with id {experiment_id} not found - do you have the correct id?"
-        )
+        message = f"Experiment with id {experiment_id} not found - do you have the correct id?"
+        logger.error(message)
+
+        raise RuntimeError(message)
     else:
         raise http_error
 
@@ -34,9 +40,11 @@ def get_manager():
     """
     token = os.environ.get("ELABFTW_TOKEN")
     if token is None:
-        raise RuntimeError(
-            "The ELABFTW_TOKEN environment variable needs to be set to your eLabFTW access token."
-        )
+
+        message = "The ELABFTW_TOKEN environment variable needs to be set to your eLabFTW access token."
+        logger.error(message)
+
+        raise RuntimeError(message)
     return elabapy.Manager(endpoint=url + "/api/v1/", token=token)
 
 

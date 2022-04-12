@@ -3,6 +3,9 @@ from .linked_items import get_linked_items
 from .util import get_experiment
 import json
 from datetime import datetime
+import logging
+
+logger = logging.getLogger("mease-elabftw")
 
 
 def dict_to_string(dict):
@@ -37,7 +40,11 @@ def get_nwb_metadata(experiment_id):
     experiment = get_experiment(experiment_id)
     expmetadata = get_metadata(experiment_id)
     linked_items = get_linked_items(experiment_id)
+    logger.info(f"Begin metadata collection of experiment id: {experiment_id}")
+    logger.debug(f"Collected experiment:  \n \t{json.dumps(experiment, indent = 4)}")
 
+    logger.debug(f"Collected metadata: : \n \t {json.dumps(expmetadata, indent = 4)}")
+    logger.debug(f"Collected linked items: \n \t{json.dumps(linked_items, indent = 4)}")
     metadata = {
         "NWBFile": dict(),
         "Subject": dict(),
@@ -48,6 +55,14 @@ def get_nwb_metadata(experiment_id):
     metadata["NWBFile"]["identifier"] = experiment["elabid"]
     # session start time needs to be converted to datatime for pynwb
     # this conversion loggs a warning, as no timezone is specified. It assumes local time, which is fine for now.
+    logger.info(
+        f"Session start time will be converted from string to datetime. \n From "
+        + str(experiment["datetime"])
+        + " to "
+        + str(datetime.fromisoformat(experiment["datetime"]))
+        + ")"
+    )
+
     metadata["NWBFile"]["session_start_time"] = datetime.fromisoformat(
         experiment["datetime"]
     )
@@ -68,6 +83,14 @@ def get_nwb_metadata(experiment_id):
                 print(key, value["value"])
                 # date of birth needs to be converted to datetime
                 if key.split(".")[1] == "date_of_birth":
+                    logger.info(
+                        f"mouse date of birth  will be converted from string to datetime. \n From "
+                        + str(value["value"])
+                        + " to "
+                        + str(datetime.fromisoformat(value["value"]))
+                        + ")"
+                    )
+
                     metadata["Subject"][key.split(".")[1]] = datetime.fromisoformat(
                         value["value"]
                     )

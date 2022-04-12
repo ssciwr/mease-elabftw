@@ -1,5 +1,8 @@
 import json
 from .util import get_experiment
+import logging
+
+logger = logging.getLogger("mease-elabftw")
 
 
 def get_metadata(experiment_id):
@@ -14,7 +17,8 @@ def get_metadata(experiment_id):
     experiment = get_experiment(experiment_id)
     metadata = json.loads(experiment.get("metadata", "{}")).get("extra_fields")
     if not metadata:
-        raise RuntimeError(
-            f"Experiment with id {experiment_id} doesn't contain any metadata."
-        )
+        message = f"Experiment with id {experiment_id} doesn't contain any metadata."
+        logger.error(message)
+
+        raise RuntimeError(message)
     return metadata

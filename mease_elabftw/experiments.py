@@ -2,6 +2,9 @@ from .util import get_experiments, get_manager, handle_http_error
 from datetime import datetime
 from requests.exceptions import HTTPError
 import os
+import logging
+
+logger = logging.getLogger("mease-elabftw")
 
 
 def list_experiments(owner=""):
@@ -24,6 +27,7 @@ def list_experiments(owner=""):
             title = e.get("title", "")
             date = datetime.strptime(e.get("date", ""), "%Y%m%d")
             output.append(f"{id}: {title} ({fullname}, {date:%Y-%m-%d})")
+    logger.debug(f"Experiment list for {owner}: \n {output}")
     return output
 
 
@@ -46,13 +50,14 @@ def upload_file(experiment_id, filename):
             status = manager.upload_to_experiment(experiment_id, {"file": f})
         if status.get("result") == "success":
             upload_id = status.get("id")
-            print(
+            logger.info(
                 f"Uploaded file {filename} to experiment {experiment_id} with upload id {upload_id}"
             )
+
             return upload_id
         else:
-            raise RuntimeError(
-                f"Could not upload file {filename} to experiment {experiment_id}"
-            )
+            message = f"Could not upload file {filename} to experiment {experiment_id}"
+            logger.error(message + f"\n The upload status is: {status.get('result')}")
+            raise RuntimeError(message)
     except HTTPError as e:
         handle_http_error(e, experiment_id)
