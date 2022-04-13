@@ -4,6 +4,11 @@ from .util import get_experiment, convert_weight
 import json
 from datetime import datetime
 
+# from .logger import logger as logger
+import logging
+
+logger = logging.getLogger("mease-elabftw")
+
 
 def dict_to_string(dict):
     """
@@ -39,6 +44,7 @@ def get_nwb_metadata(experiment_id):
     :return: Nested dictionary with all required metadata.
     :rtype: dict
     """
+    logger.info(f"Begin data collection of experiment id: {experiment_id}")
 
     experiment = get_experiment(experiment_id)
     expmetadata = get_metadata(experiment_id)
@@ -52,8 +58,16 @@ def get_nwb_metadata(experiment_id):
     }
     metadata["NWBFile"]["session_description"] = experiment["title"]
     metadata["NWBFile"]["identifier"] = experiment["elabid"]
-    # Session start time needs to be converted to datatime for pynwb.
-    # This conversion loggs a warning, as no timezone is specified. It assumes local time, which is fine for now.
+    # session start time needs to be converted to datatime for pynwb
+    # this conversion loggs a warning, as no timezone is specified. It assumes local time, which is fine for now.
+    logger.info(
+        f"Session start time will be converted from string to datetime. \n From "
+        + str(experiment["datetime"])
+        + " to "
+        + str(datetime.fromisoformat(experiment["datetime"]))
+        + ")"
+    )
+
     metadata["NWBFile"]["session_start_time"] = datetime.fromisoformat(
         experiment["datetime"]
     )
@@ -73,6 +87,14 @@ def get_nwb_metadata(experiment_id):
             for key, value in f.items():
                 # Date of birth needs to be converted to datetime.
                 if key.split(".")[1] == "date_of_birth":
+                    logger.info(
+                        f"mouse date of birth  will be converted from string to datetime. \n From "
+                        + str(value["value"])
+                        + " to "
+                        + str(datetime.fromisoformat(value["value"]))
+                        + ")"
+                    )
+
                     metadata["Subject"][key.split(".")[1]] = datetime.fromisoformat(
                         value["value"]
                     )
@@ -99,4 +121,6 @@ def get_nwb_metadata(experiment_id):
                 if value["type"] == "number":
                     val = float(val)
                 metadata["Other"]["OptogeneticStimulationSite"][key.split(".")[1]] = val
+
+    logger.debug(f"report final metadata: \n" + dict_to_string(metadata))
     return metadata

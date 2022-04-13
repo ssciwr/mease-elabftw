@@ -7,10 +7,18 @@ import jsonschema
 from pynwb import NWBFile, validate, NWBHDF5IO
 from datetime import datetime
 from dateutil import tz
+import logging
+
+mease_elabftw.toggle_logger(True)
+mease_elabftw.set_log_level(logging.INFO)
 
 
 def test_get_nwb_metadata():
+
+    logger = logging.getLogger("mease-elabftw")
+    logger.error("first function")
     data = mease_elabftw.get_nwb_metadata(test_ids.valid_experiment)
+
     assert len(data.keys()) == 4
 
     # NWBFile section
@@ -63,12 +71,14 @@ def test_get_nwb_metadata():
 
 
 def test_NWB_creation(tmp_path):
+
+    logger = logging.getLogger("mease-elabftw")
+
+    logger.error("second function")
+
     data = mease_elabftw.get_nwb_metadata(test_ids.valid_experiment)
     nwbfile_dict = data.get("NWBFile")
-    # pynwb only takes session_start_time as a datetime object.
-    # nwbfile_dict["session_start_time"] = datetime.fromisoformat(
-    #     nwbfile_dict["session_start_time"]
-    # )
+
     nwbfile = NWBFile(**nwbfile_dict)
     # write the nwbfile to the plate, this is necessary for the validation.
 
