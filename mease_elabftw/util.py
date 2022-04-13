@@ -105,19 +105,35 @@ def convert_weight(weight_str):
     # Check if letters are present in string:
     if weight_str.islower():
 
-        weight_str, unit_str, _ = re.split(r"([a-z])", weight_str, 1, flags=re.I)
+        # weight_str, unit_str, second_unit = re.split(r"([a-z])", weight_str, 1, flags=re.I)
+
+        match = re.compile("[^\W\d]").search(weight_str)
+        weight_str, unit_str = [
+            weight_str[: match.start()],
+            weight_str[match.start() :],
+        ]
 
         weight_str = weight_str.strip()
         unit_str = unit_str.strip()
-        if unit_str == "g" or unit_str == "kg":
-            weight_str = weight_str + " " + unit_str
+        if unit_str == "g":
+            weight = float(weight_str) / 1000
+
+        elif unit_str == "kg":
+            weight = float(weight_str)
 
         else:
-            # add this to loggs
-            weight_str = weight_str + " g"
+            weight = float(weight_str) / 1000
+            logger.error(
+                f"A unit was found but could not be interpreted. Maybe missing a whitespace: {weight_str} is interpreted as g and was conferted to {weight}"
+            )
 
-    # if no letters are present strip white space and add " g" for grams.
+    # if no letters are present strip white space.
+    # if number is greater 1 its asumed to be gram, smaller 1 assumed to be kg
     else:
-        weight_str = weight_str.strip()
-        weight_str = weight_str + " g"
-    return weight_str
+        weight = float(weight_str)
+        if weight > 1:
+            weight = weight / 1000
+
+    logger.info(f"Weight was changed from {weight_str} to {round(weight,5)}")
+
+    return round(weight, 5)

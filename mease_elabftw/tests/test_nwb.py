@@ -5,19 +5,17 @@ from pathlib import Path
 import json
 import jsonschema
 from pynwb import NWBFile, validate, NWBHDF5IO
+from pynwb.file import Subject
 from datetime import datetime
 from dateutil import tz
 import logging
-
-mease_elabftw.activate_logger(True)
-mease_elabftw.set_log_level(logging.INFO)
 
 
 def test_get_nwb_metadata():
 
     logger = logging.getLogger("mease-elabftw")
     logger.error("first function")
-    data = mease_elabftw.get_nwb_metadata(test_ids.valid_experiment)
+    data = mease_elabftw.nwb.get_pynwb_data(test_ids.valid_experiment)
 
     assert len(data.keys()) == 4
 
@@ -45,12 +43,11 @@ def test_get_nwb_metadata():
     # Subject section
     subject = data.get("Subject")
     assert subject["sex"] == "unknown"
-    assert subject["weight"] == "2 g"
+    assert subject["weight"] == "0.002"
     assert subject["genotype"] == "Nt1Cre-ChR2-EYFP"
     assert subject["subject_id"] == "xy1"
     assert subject["description"] == "test mouse"
     assert subject["date_of_birth"] == datetime.fromisoformat("2000-01-01")
-    # Validate json using nwb schema
 
     # convert datetime to str for json validation
     data["NWBFile"]["session_start_time"] = data["NWBFile"][
@@ -60,6 +57,7 @@ def test_get_nwb_metadata():
         "%Y-%m-%d"
     )
 
+    # Validate json using nwb schema
     # (remove "Other" section before validating)
     del data["Other"]
     schema_file_path = (
@@ -72,16 +70,24 @@ def test_get_nwb_metadata():
 
 def test_NWB_creation(tmp_path):
 
+    mease_elabftw.activate_logger(True)
+    mease_elabftw.set_log_level(logging.INFO)
     logger = logging.getLogger("mease-elabftw")
 
     logger.error("second function")
 
-    data = mease_elabftw.get_nwb_metadata(test_ids.valid_experiment)
+    data = mease_elabftw.nwb.get_pynwb_data(test_ids.valid_experiment)
     nwbfile_dict = data.get("NWBFile")
 
     nwbfile = NWBFile(**nwbfile_dict)
-    # write the nwbfile to the plate, this is necessary for the validation.
 
+    # add subject
+    logger.info(data["Subject"])
+    subject = Subject(**data.get("Subject"))
+    nwbfile.subject = subject
+
+    # write the nwbfile to the plate, this is necessary for the validation.
+    logger.info(nwbfile)
     file = tmp_path / "test.nwb"
     io = NWBHDF5IO(file, mode="w")
     io.write(nwbfile)
@@ -98,3 +104,5 @@ def test_NWB_creation(tmp_path):
     for key in nwbfile_dict.keys():
         if key != "session_start_time":
             assert nwbfile.fields[key] == nwbfile_dict[key]
+
+    logger.info(f"metadata: {nwbfile}")
