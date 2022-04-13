@@ -43,16 +43,12 @@ def get_nwb_metadata(experiment_id):
     :return: Nested dictionary with all required metadata.
     :rtype: dict
     """
+    logger.info(f"Begin data collection of experiment id: {experiment_id}")
 
     experiment = get_experiment(experiment_id)
     expmetadata = get_metadata(experiment_id)
     linked_items = get_linked_items(experiment_id)
 
-    logger.info(f"Begin metadata collection of experiment id: {experiment_id}")
-    logger.debug(f"Collected experiment:  \n \t{json.dumps(experiment, indent = 4)}")
-
-    logger.debug(f"Collected metadata: : \n \t {json.dumps(expmetadata, indent = 4)}")
-    logger.debug(f"Collected linked items: \n \t{json.dumps(linked_items, indent = 4)}")
     metadata = {
         "NWBFile": dict(),
         "Subject": dict(),
@@ -125,4 +121,6 @@ def get_nwb_metadata(experiment_id):
                 if value["type"] == "number":
                     val = float(val)
                 metadata["Other"]["OptogeneticStimulationSite"][key.split(".")[1]] = val
+
+    logger.debug(f"report final metadata: \n" + dict_to_string(metadata))
     return metadata

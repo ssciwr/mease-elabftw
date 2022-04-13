@@ -3,6 +3,8 @@ import os
 from requests.exceptions import HTTPError
 import re
 import numbers
+import json
+
 from .logger import getLogger
 
 logger = getLogger("mease-elabftw")
@@ -60,8 +62,14 @@ def get_experiment(experiment_id):
     :rtype: dict
     """
     manager = get_manager()
+    logger.info(f"Getting experiment {experiment_id}")
     try:
-        return manager.get_experiment(experiment_id)
+        experiment = manager.get_experiment(experiment_id)
+        logger.debug(
+            f"Collected experiment:  \n \t{json.dumps(experiment, indent = 4)}"
+        )
+
+        return experiment
     except HTTPError as e:
         handle_http_error(e, experiment_id)
 
