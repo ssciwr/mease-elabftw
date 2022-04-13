@@ -5,7 +5,9 @@ import json
 from datetime import datetime
 
 # from .logger import logger as logger
-from mease_elabftw.logger import logger
+import logging
+
+logger = logging.getLogger("mease-elabftw")
 
 
 def dict_to_string(dict):
@@ -42,7 +44,6 @@ def get_nwb_metadata(experiment_id):
     :return: Nested dictionary with all required metadata.
     :rtype: dict
     """
-    print(logger.getEffectiveLevel())
     logger.info(f"Begin data collection of experiment id: {experiment_id}")
 
     experiment = get_experiment(experiment_id)
@@ -84,7 +85,6 @@ def get_nwb_metadata(experiment_id):
         elif category == "mouse":
             f = json.loads(item.get("metadata", "{}")).get("extra_fields")
             for key, value in f.items():
-                print(key, value["value"])
                 # Date of birth needs to be converted to datetime.
                 if key.split(".")[1] == "date_of_birth":
                     logger.info(

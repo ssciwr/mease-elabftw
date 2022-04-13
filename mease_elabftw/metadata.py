@@ -1,6 +1,8 @@
 import json
 from .util import get_experiment
-from .logger import logger
+import logging
+
+logger = logging.getLogger("mease-elabftw")
 
 
 def get_metadata(experiment_id):
