@@ -19,11 +19,11 @@ def toggle_logger(toggle_bool):
 
     By default the logger is not active.
     To activate or deactive use either:
-    ```
+    ``
         from mease_elabftw.logger import toggle_logger
         toggle_logger(bool)
-    ```
-    or: `mease_elabftw.toggle_logger(bool)
+    ``
+    or: ``mease_elabftw.toggle_logger(bool)``
 
 
 
