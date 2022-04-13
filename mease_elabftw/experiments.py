@@ -2,9 +2,7 @@ from .util import get_experiments, get_manager, handle_http_error
 from datetime import datetime
 from requests.exceptions import HTTPError
 import os
-from .logger import getLogger
-
-logger = getLogger("mease-elabftw")
+from .logger import logger
 
 
 def list_experiments(owner=""):

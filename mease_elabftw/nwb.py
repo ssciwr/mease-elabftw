@@ -4,9 +4,8 @@ from .util import get_experiment, convert_weight
 import json
 from datetime import datetime
 
-from .logger import getLogger
-
-logger = getLogger("mease-elabftw")
+# from .logger import logger as logger
+from mease_elabftw.logger import logger
 
 
 def dict_to_string(dict):
@@ -43,6 +42,7 @@ def get_nwb_metadata(experiment_id):
     :return: Nested dictionary with all required metadata.
     :rtype: dict
     """
+    print(logger.getEffectiveLevel())
     logger.info(f"Begin data collection of experiment id: {experiment_id}")
 
     experiment = get_experiment(experiment_id)

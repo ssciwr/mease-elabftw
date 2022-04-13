@@ -1,9 +1,7 @@
 from .util import get_experiment, get_item
 from .parsing import html_to_dict
 import json
-from .logger import getLogger
-
-logger = getLogger("mease-elabftw")
+from .logger import logger
 
 
 def get_linked_items(experiment_id):

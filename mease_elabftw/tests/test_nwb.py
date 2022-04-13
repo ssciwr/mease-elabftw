@@ -10,7 +10,9 @@ from dateutil import tz
 
 
 def test_get_nwb_metadata():
+
     data = mease_elabftw.get_nwb_metadata(test_ids.valid_experiment)
+
     assert len(data.keys()) == 4
 
     # NWBFile section

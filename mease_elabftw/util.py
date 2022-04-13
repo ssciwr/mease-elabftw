@@ -4,10 +4,8 @@ from requests.exceptions import HTTPError
 import re
 import numbers
 import json
+from .logger import logger
 
-from .logger import getLogger
-
-logger = getLogger("mease-elabftw")
 
 url = "https://elabftw.uni-heidelberg.de"
 
