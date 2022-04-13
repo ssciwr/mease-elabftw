@@ -15,15 +15,20 @@ output_file = os.path.join("mease_elabftw", "logging", "logging.log")
 def toggle_logger(toggle_bool):
     """
     This function enables or disables the logging feature.
-    When enabled the logger will write import information into a file.
+
+    When enabled the logger will write important information into a file.
 
     By default the logger is not active.
+
     To activate or deactive use either:
-    ``
-        from mease_elabftw.logger import toggle_logger
-        toggle_logger(bool)
-    ``
-    or: ``mease_elabftw.toggle_logger(bool)``
+
+    ``from mease_elabftw.logger import toggle_logger``
+
+    ``toggle_logger(bool)``
+
+    or:
+
+    ``mease_elabftw.toggle_logger(bool)``
 
 
 
@@ -62,13 +67,17 @@ def toggle_logger(toggle_bool):
 def set_log_level(level):
     """
     User function to change the log level.
-    10: Debug
-    20: Info
-    30: Warning
-    40: Error
-    50: Critical
 
-    It is also possible to use `logging.DEBUG` etc.
+    Possible values are:
+
+     * 10: Debug
+     * 20: Info
+     * 30: Warning
+     * 40: Error
+     * 50: Critical
+
+    It is also possible to use ``logging.DEBUG`` etc.
+
     This function will automatically enable the logger if used.
 
     :param level: New log level.
