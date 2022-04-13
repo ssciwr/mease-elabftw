@@ -9,7 +9,7 @@ from datetime import datetime
 from dateutil import tz
 import logging
 
-mease_elabftw.toggle_logger(True)
+mease_elabftw.activate_logger(True)
 mease_elabftw.set_log_level(logging.INFO)
 
 

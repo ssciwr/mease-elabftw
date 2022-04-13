@@ -12,7 +12,7 @@ logger.setLevel(logging.CRITICAL)
 output_file = os.path.join("mease_elabftw", "logging", "logging.log")
 
 
-def toggle_logger(toggle_bool):
+def activate_logger(toggle_bool):
     """
     This function enables or disables the logging feature.
 
@@ -84,5 +84,5 @@ def set_log_level(level):
     :type level: int
     """
     logger = logging.getLogger("mease-elabftw")
-    toggle_logger(True)
+    activate_logger(True)
     logger.setLevel(level)
