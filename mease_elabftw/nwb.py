@@ -183,21 +183,23 @@ def validate_pynwb_data(nwb_metadata):
     pynwbfile = create_pynwb(nwb_metadata)
 
     # Make temporary nwb file for validation.
-    file = NamedTemporaryFile(mode="w", suffix=".nwb", dir=".")
-    io = NWBHDF5IO(file.name, mode="w")
-    io.write(pynwbfile)
-    # This validate function behaves a bit unintuitively, when everything is fine it returns an empty list,
-    # if not it raises an exception or returns a list of warnings.
+    with NamedTemporaryFile(mode="w", suffix=".nwb") as file:
+        io = NWBHDF5IO(file.name, mode="w")
+        io.write(pynwbfile)
+        # This validate function behaves a bit unintuitively, when everything is fine it returns an empty list,
+        # if not it raises an exception or returns a list of warnings.
 
-    if validate(io) != []:
-        validation_bool = False
-        message = f"nwbfile could not be validated, raised errors are {validate(io)}"
-        logger.error(message)
-        raise Exception(message)
-    else:
-        validation_bool = True
+        if validate(io) != []:
+            validation_bool = False
+            message = (
+                f"nwbfile could not be validated, raised errors are {validate(io)}"
+            )
+            logger.error(message)
+            raise Exception(message)
+        else:
+            validation_bool = True
 
-        logger.info(f"Succsesfull  validation of nwb file: \n {pynwbfile}")
-    io.close()
+            logger.info(f"Succsesfull  validation of nwb file: \n {pynwbfile}")
+        io.close()
 
     return validation_bool
