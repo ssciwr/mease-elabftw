@@ -115,7 +115,7 @@ def get_nwb_metadata(experiment_id):
     """
     metadata = get_raw_nwb_metadata(experiment_id)
 
-    # nwb_converter unfortunatly needs the weight to be a float in kg.
+    # nwb_converter unfortunately needs the weight to be a float in kg.
     metadata["Subject"]["weight"] = convert_weight(metadata["Subject"]["weight"])
 
     if validate_pynwb_data(metadata):
@@ -132,7 +132,7 @@ def create_pynwb(nwb_metadata):
     This is used for the validation function.
 
 
-    :param nwb_metadata:  The dictionary that is due to be exportet to ``nwb_converter``
+    :param nwb_metadata:  The dictionary that is due to be exported to ``nwb_converter``
     :type nwb_metadata: dict
     :return: The pynwb.NWBFile object.
     :rtype: pynwb.NWBFile
@@ -143,12 +143,12 @@ def create_pynwb(nwb_metadata):
     # session_start_time needs to be converted to datatime for pynwb
     # This conversion loggs a warning, as no timezone is specified. It assumes local time, which is fine for now.
     pynwb_metadata["NWBFile"]["session_start_time"] = convert_datetime(
-        pynwb_metadata["NWBFile"]["session_start_time"], "session_start_time"
+        pynwb_metadata["NWBFile"], "session_start_time"
     )
 
     # Subject date of birth needs to be converted to datetime.
     pynwb_metadata["Subject"]["date_of_birth"] = convert_datetime(
-        pynwb_metadata["Subject"]["date_of_birth"], "date_of_birth"
+        pynwb_metadata["Subject"], "date_of_birth"
     )
 
     # Subject weight needs to be a string
@@ -175,9 +175,9 @@ def validate_pynwb_data(nwb_metadata):
     This ensures, that only valid nwb data gets passed to the nwb_converter.
 
 
-    :param nwb_metadata: The dictionary that is due to be exportet to ``nwb_converter``
+    :param nwb_metadata: The dictionary that is due to be exported to ``nwb_converter``
     :type nwb_metadata: dict
-    :return: A bool wether or not the validation was succsesfull.
+    :return: A bool wether or not the validation was successful.
     :rtype: bool
     """
 
@@ -191,7 +191,7 @@ def validate_pynwb_data(nwb_metadata):
 
     io = NWBHDF5IO(file.name, mode="w")
     io.write(pynwbfile)
-    # This validate function behaves a bit unintuitively, when everything is fine it returns an empty list,
+    # This validate function behaves a bit intuitively, when everything is fine it returns an empty list,
     # if not it raises an exception or returns a list of warnings.
 
     if validate(io) != []:
@@ -202,7 +202,7 @@ def validate_pynwb_data(nwb_metadata):
     else:
         validation_bool = True
 
-        logger.info(f"Succsesfull  validation of nwb file: \n {pynwbfile}")
+        logger.info(f"Successful  validation of nwb file: \n {pynwbfile}")
     io.close()
 
     return validation_bool

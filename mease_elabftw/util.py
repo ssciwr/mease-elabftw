@@ -15,7 +15,7 @@ url = "https://elabftw.uni-heidelberg.de"
 
 def handle_http_error(http_error, experiment_id=None):
     """
-    Unified error hanlding, for http and wrong id errors.
+    Unified error handling, for http and wrong id errors.
 
     :param http_error: Error object.
     :type http_error: HTTPError
@@ -85,7 +85,7 @@ def get_item(item_id):
 
 def get_experiments():
     """
-    Get all experiments accesible with the current token.
+    Get all experiments accessible with the current token.
 
     :return: All experiments
     :rtype: list of dict
@@ -100,7 +100,7 @@ def get_experiments():
 
 def convert_weight(weight_str):
     """
-    Takes a weight and converts it into a float, so that the nwb_converter accepts it.
+    Takes a weight determines if its in g or kg and converts it into a kg float, so that the nwb_converter accepts it.
 
     If a unit is given in the string it will be extracted and conversion will happen according to the unit.
     When no unit is given gram will be assumed.
@@ -146,7 +146,7 @@ def convert_weight(weight_str):
             )
 
     # if no letters are present strip white space.
-    # if number is greater 1 its asumed to be gram, smaller 1 assumed to be kg
+    # if number is greater 1 its assumed to be gram, smaller 1 assumed to be kg
     else:
         weight = float(weight_str)
         if weight > 1:
@@ -157,12 +157,9 @@ def convert_weight(weight_str):
     return round(weight, 5)
 
 
-def convert_datetime(date_str, date_name):
+def convert_datetime(metadata, date_name):
     """
     For pynwb all dates need to be of type datetime.datetime.
-
-
-
 
     :param date_str: The date as an isoformat string.
     :type date_str: string
@@ -171,11 +168,12 @@ def convert_datetime(date_str, date_name):
     :return: The datetime as an datetime.datetime object
     :rtype: datetime-datetime
     """
+    date_str = metadata[date_name]
     try:
         converted_time = datetime.fromisoformat(date_str)
     except ValueError as e:
         raise ValueError(
-            f'An error occured in converting "{date_name}" to datetime: "{date_str}" is not a valid isoformat datetime.'
+            f'An error occurred in converting "{date_name}" to datetime: "{date_str}" is not a valid isoformat datetime.'
         )
 
     logger.info(
