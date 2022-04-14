@@ -61,54 +61,26 @@ def test_get_nwb_metadata():
         jsonschema.validate(instance=data, schema=json.load(schema_file))
 
 
-def test_NWB_creation(tmp_path):
-
-    mease_elabftw.activate_logger(True)
-    mease_elabftw.set_log_level(logging.INFO)
-    logger = logging.getLogger("mease-elabftw")
-
-    logger.error("second function")
+def test_create_pynwb():
 
     nwb_metadata = mease_elabftw.nwb.get_nwb_metadata(test_ids.valid_experiment)
 
-    # get pynwb from id
-    pynwb_file_1 = mease_elabftw.nwb.create_pynwb(test_ids.valid_experiment)
-
     # Get pynwb from nwb_metadata
-    pynwb_file_2 = mease_elabftw.nwb.create_pynwb(nwb_metadata=nwb_metadata)
+    pynwb_file = mease_elabftw.nwb.create_pynwb(nwb_metadata=nwb_metadata)
 
     # assert both methods result in same result.
     nwbfile_dict = nwb_metadata.get("NWBFile")
     subject_dict = nwb_metadata.get("Subject")
-
-    for key in nwbfile_dict.keys():
-
-        if key == "file_creation_date":
-            # this will always be different.
-            pass
-        if key == "subject":
-            for subj_keys in subject_dict.keys():
-                assert (
-                    pynwb_file_1.fields[key].fields[subj_keys]
-                    == pynwb_file_2.fields[key].fields[subj_keys]
-                )
-
-        else:
-            assert pynwb_file_1.fields[key] == pynwb_file_2.fields[key]
-
-    # This might be a solution to transform a pynwb file back to a dict.
-    logger.debug({key: pynwb_file_1.fields[key] for key in nwbfile_dict})
-    logger.debug({key: pynwb_file_1.subject.fields[key] for key in subject_dict})
 
     # A simple assertion of the fied and our previously created dict is not possible as pynwb creates additional fields.
     # Because of this only keys in the original dict are compared. The time series has to be excluded as it is also altered by pynwb.
     for key in nwbfile_dict.keys():
         if key == "session_start_time":
             pass  # does not really want to be compared.
-            # assert str(pynwb_file_1.fields[key]) == str(datetime.fromisoformat(nwbfile_dict[key]))
+            # assert str(pynwb_file.fields[key]) == str(datetime.fromisoformat(nwbfile_dict[key]))
 
         else:
-            assert pynwb_file_1.fields[key] == nwbfile_dict[key]
+            assert pynwb_file.fields[key] == nwbfile_dict[key]
 
     # Same for the subject
 
@@ -118,7 +90,26 @@ def test_NWB_creation(tmp_path):
             # assert str(pynwb_file_1.subject.fields[key]) == str(datetime.fromisoformat(subject_dict[key]))
 
         elif key == "weight":
-            assert pynwb_file_1.subject.fields[key] == str(subject_dict[key]) + " kg"
+            assert pynwb_file.subject.fields[key] == str(subject_dict[key]) + " kg"
 
         else:
-            assert pynwb_file_1.subject.fields[key] == subject_dict[key]
+            assert pynwb_file.subject.fields[key] == subject_dict[key]
+
+
+def test_validate_pynwb_data():
+
+    mease_elabftw.activate_logger(True)
+    mease_elabftw.set_log_level(logging.INFO)
+    logger = logging.getLogger("mease-elabftw")
+    logger.error("test_validate_pynwb_data")
+
+    nwb_metadata = mease_elabftw.nwb.get_nwb_metadata(test_ids.valid_experiment)
+    assert mease_elabftw.nwb.validate_pynwb_data(nwb_metadata) == True
+
+    nwb_metadata["NWBFile"]["session_start_time"] = "unsuable_time"
+    with pytest.raises(ValueError) as ValueError_info:
+        mease_elabftw.nwb.validate_pynwb_data(nwb_metadata)
+
+    nwb_metadata["NWBFile"]["session_start_time"] = ""
+    with pytest.raises(ValueError) as ValueError_info:
+        mease_elabftw.nwb.validate_pynwb_data(nwb_metadata)
