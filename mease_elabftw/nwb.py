@@ -183,7 +183,7 @@ def validate_pynwb_data(nwb_metadata):
     pynwbfile = create_pynwb(nwb_metadata)
 
     # Make temporary nwb file for validation.
-    file = NamedTemporaryFile(mode="w", suffix=".nwb")
+    file = NamedTemporaryFile(mode="w", suffix=".nwb", dir=".")
     io = NWBHDF5IO(file.name, mode="w")
     io.write(pynwbfile)
     # This validate function behaves a bit unintuitively, when everything is fine it returns an empty list,
