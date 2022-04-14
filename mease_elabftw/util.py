@@ -5,6 +5,8 @@ import re
 import numbers
 import json
 import logging
+from datetime import datetime
+
 
 logger = logging.getLogger("mease-elabftw")
 
@@ -97,10 +99,26 @@ def get_experiments():
 
 
 def convert_weight(weight_str):
+    """
+    Takes a weight and converts it into a float, so that the nwb_converter accepts it.
+
+    If a unit is given in the string it will be extracted and conversion will happen according to the unit.
+    When no unit is given gram will be assumed.
+
+
+    :param weight_str: the weight as either a number or a string with or without unit.
+    :type weight_str: str or int
+    :return: unitless weight as a float
+    :rtype: float
+    """
+
     if isinstance(weight_str, numbers.Number):
         weight_str = str(weight_str)
 
     weight_str = weight_str.lower()
+
+    if weight_str == "":
+        logger.warning("No weight given.")
 
     # Check if letters are present in string:
     if weight_str.islower():
@@ -137,3 +155,33 @@ def convert_weight(weight_str):
     logger.info(f"Weight was changed from {weight_str} to {round(weight,5)}")
 
     return round(weight, 5)
+
+
+def convert_datetime(date_str, date_name):
+    """
+    For pynwb all dates need to be of type datetime.datetime.
+
+
+
+
+    :param date_str: The date as an isoformat string.
+    :type date_str: string
+    :param date_name: A description of the current transformation. Only needed for error message and logging.
+    :type date_name: string
+    :return: The datetime as an datetime.datetime object
+    :rtype: datetime-datetime
+    """
+    try:
+        converted_time = datetime.fromisoformat(date_str)
+    except ValueError as e:
+        raise ValueError(
+            f'An error occured in converting "{date_name}" to datetime: "{date_str}" is not a valid isoformat datetime.'
+        )
+
+    logger.info(
+        f"{date_name} will be converted from string to datetime. \n From "
+        + str(date_str)
+        + f" to {converted_time})"
+    )
+
+    return converted_time
