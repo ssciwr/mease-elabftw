@@ -17,3 +17,5 @@ def test_convert_weight():
     assert convert_weight("2g") == 0.002
     assert convert_weight("2 kg") == 2
     assert convert_weight("2kg") == 2
+    with pytest.raises(ValueError) as ValueError_info:
+        convert_weight("")
