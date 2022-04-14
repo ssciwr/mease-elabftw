@@ -12,6 +12,9 @@ A Python library for interacting with `eLabFTW <https://www.elabftw.net/>`_ expe
    :caption: Contents
 
    install
+   cli
+   python
+   source
 
 API Reference
 -------------
