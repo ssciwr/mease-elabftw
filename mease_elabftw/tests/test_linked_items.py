@@ -26,10 +26,10 @@ def test_get_linked_items():
     assert len(d.items()) == 6
     # silicon probe
     assert items[4]["category"] == "silicon probe"
-    assert items[4]["title"] == "Untitled"
+    assert items[4]["title"] == "My test H5 probe"
     d = json.loads(items[4].get("metadata", "{}")).get("extra_fields")
-    assert d["ElectrodeGroup.name"]["value"] == "H3"
-    assert d["ElectrodeGroup.location"]["value"] == "S1"
+    assert d["ElectrodeGroup.name"]["value"] == "H5"
+    assert d["ElectrodeGroup.description"]["value"] == "a test H5 probe"
     # virus
     assert items[6]["category"] == "virus"
     assert items[6]["title"] == "AAVretr Flpo"
