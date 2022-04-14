@@ -4,20 +4,17 @@ import test_ids
 from pathlib import Path
 import json
 import jsonschema
-from pynwb import NWBFile, validate, NWBHDF5IO
+
 from datetime import datetime
 from dateutil import tz
 import logging
-
-mease_elabftw.activate_logger(True)
-mease_elabftw.set_log_level(logging.INFO)
 
 
 def test_get_nwb_metadata():
 
     logger = logging.getLogger("mease-elabftw")
     logger.error("first function")
-    data = mease_elabftw.get_nwb_metadata(test_ids.valid_experiment)
+    data = mease_elabftw.nwb.get_nwb_metadata(test_ids.valid_experiment)
 
     assert len(data.keys()) == 4
 
@@ -26,9 +23,8 @@ def test_get_nwb_metadata():
     assert len(nwbfile) == 7
     assert nwbfile["session_description"] == "test fake experiment with json metadata"
     assert nwbfile["identifier"] == "20211001-8b6f100d66f4312d539c52620f79d6a503c1e2d1"
-    assert nwbfile["session_start_time"] == datetime.fromisoformat(
-        "2021-10-01 11:13:47"
-    )
+    assert nwbfile["session_start_time"] == "2021-10-01 11:13:47"
+
     assert len(nwbfile["experimenter"]) == 1
     assert nwbfile["experimenter"][0] == "Liam Keegan"
     assert (
@@ -45,21 +41,16 @@ def test_get_nwb_metadata():
     # Subject section
     subject = data.get("Subject")
     assert subject["sex"] == "unknown"
-    assert subject["weight"] == "2 g"
+    assert subject["weight"] == 0.002
     assert subject["genotype"] == "Nt1Cre-ChR2-EYFP"
     assert subject["subject_id"] == "xy1"
     assert subject["description"] == "test mouse"
-    assert subject["date_of_birth"] == datetime.fromisoformat("2000-01-01")
+    assert subject["date_of_birth"] == "2000-01-01"
+
+    # Convert weight into string for validation
+    data["Subject"]["weight"] = str(data["Subject"]["weight"]) + " kg"
+
     # Validate json using nwb schema
-
-    # convert datetime to str for json validation
-    data["NWBFile"]["session_start_time"] = data["NWBFile"][
-        "session_start_time"
-    ].strftime("%Y-%m-%d %H:%M%S")
-    data["Subject"]["date_of_birth"] = data["Subject"]["date_of_birth"].strftime(
-        "%Y-%m-%d"
-    )
-
     # (remove "Other" section before validating)
     del data["Other"]
     schema_file_path = (
@@ -70,31 +61,55 @@ def test_get_nwb_metadata():
         jsonschema.validate(instance=data, schema=json.load(schema_file))
 
 
-def test_NWB_creation(tmp_path):
+def test_create_pynwb():
 
-    logger = logging.getLogger("mease-elabftw")
+    nwb_metadata = mease_elabftw.nwb.get_nwb_metadata(test_ids.valid_experiment)
 
-    logger.error("second function")
+    # Get pynwb from nwb_metadata
+    pynwb_file = mease_elabftw.nwb.create_pynwb(nwb_metadata=nwb_metadata)
 
-    data = mease_elabftw.get_nwb_metadata(test_ids.valid_experiment)
-    nwbfile_dict = data.get("NWBFile")
+    # assert both methods result in same result.
+    nwbfile_dict = nwb_metadata.get("NWBFile")
+    subject_dict = nwb_metadata.get("Subject")
 
-    nwbfile = NWBFile(**nwbfile_dict)
-    # write the nwbfile to the plate, this is necessary for the validation.
-
-    file = tmp_path / "test.nwb"
-    io = NWBHDF5IO(file, mode="w")
-    io.write(nwbfile)
-    # This validate function behaves a bit unintuitively, when everything is fine it returns an empty list,
-    # if not it raises an exception or returns a list of warnings.
-    if validate(io) != []:
-        raise Exception(
-            f"nwbfile could not be validated, raised errors are {validate(io)}"
-        )
-    io.close()
-
-    # a simple assertion of the fied and our previously created dict is not possible as pynwb creates additional fields.
+    # A simple assertion of the fied and our previously created dict is not possible as pynwb creates additional fields.
     # Because of this only keys in the original dict are compared. The time series has to be excluded as it is also altered by pynwb.
     for key in nwbfile_dict.keys():
-        if key != "session_start_time":
-            assert nwbfile.fields[key] == nwbfile_dict[key]
+        if key == "session_start_time":
+            pass  # does not really want to be compared.
+            # assert str(pynwb_file.fields[key]) == str(datetime.fromisoformat(nwbfile_dict[key]))
+
+        else:
+            assert pynwb_file.fields[key] == nwbfile_dict[key]
+
+    # Same for the subject
+
+    for key in subject_dict.keys():
+        if key == "date_of_birth":
+            pass  # does not really want to be compared.
+            # assert str(pynwb_file_1.subject.fields[key]) == str(datetime.fromisoformat(subject_dict[key]))
+
+        elif key == "weight":
+            assert pynwb_file.subject.fields[key] == str(subject_dict[key]) + " kg"
+
+        else:
+            assert pynwb_file.subject.fields[key] == subject_dict[key]
+
+
+def test_validate_pynwb_data():
+
+    mease_elabftw.activate_logger(True)
+    mease_elabftw.set_log_level(logging.INFO)
+    logger = logging.getLogger("mease-elabftw")
+    logger.error("test_validate_pynwb_data")
+
+    nwb_metadata = mease_elabftw.nwb.get_nwb_metadata(test_ids.valid_experiment)
+    assert mease_elabftw.nwb.validate_pynwb_data(nwb_metadata) == True
+
+    nwb_metadata["NWBFile"]["session_start_time"] = "unsuable_time"
+    with pytest.raises(ValueError) as ValueError_info:
+        mease_elabftw.nwb.validate_pynwb_data(nwb_metadata)
+
+    nwb_metadata["NWBFile"]["session_start_time"] = ""
+    with pytest.raises(ValueError) as ValueError_info:
+        mease_elabftw.nwb.validate_pynwb_data(nwb_metadata)

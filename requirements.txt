@@ -2,3 +2,4 @@ click
 elabapy
 requests
 setuptools
+pynwb

@@ -1,8 +1,14 @@
 from .metadata import get_metadata
 from .linked_items import get_linked_items
-from .util import get_experiment, convert_weight
+from .util import get_experiment, convert_weight, convert_datetime
 import json
 from datetime import datetime
+from copy import deepcopy
+from pynwb import NWBFile, validate, NWBHDF5IO
+from pynwb.file import Subject
+from tempfile import NamedTemporaryFile
+import os
+import platform
 
 # from .logger import logger as logger
 import logging
@@ -27,17 +33,14 @@ def dict_to_string(dict):
     return str
 
 
-def get_nwb_metadata(experiment_id):
+def get_raw_nwb_metadata(experiment_id):
     """
     Collect metadata information from the given experiment id.
     Ensure data is stored under the correct keys.
 
-    Note for special cases:
-    - session_start_time will be converted to datetime.datetime object.
-    - subject.date_of_birth will be converted to datetime.datetime object.
-    - subject.weight will be converted into string with unit attached.
+    No conversion will take place in this function.
 
-
+    Warning: this function should not be used manually, for user workflow see: ``get_nwb_metadata``
 
     :param experiment_id: The experiment id given by the user.
     :type experiment_id: int
@@ -58,19 +61,8 @@ def get_nwb_metadata(experiment_id):
     }
     metadata["NWBFile"]["session_description"] = experiment["title"]
     metadata["NWBFile"]["identifier"] = experiment["elabid"]
-    # session start time needs to be converted to datatime for pynwb
-    # this conversion loggs a warning, as no timezone is specified. It assumes local time, which is fine for now.
-    logger.info(
-        f"Session start time will be converted from string to datetime. \n From "
-        + str(experiment["datetime"])
-        + " to "
-        + str(datetime.fromisoformat(experiment["datetime"]))
-        + ")"
-    )
+    metadata["NWBFile"]["session_start_time"] = experiment["datetime"]
 
-    metadata["NWBFile"]["session_start_time"] = datetime.fromisoformat(
-        experiment["datetime"]
-    )
     metadata["NWBFile"]["experimenter"] = [experiment["fullname"]]
     metadata["NWBFile"][
         "institution"
@@ -85,26 +77,8 @@ def get_nwb_metadata(experiment_id):
         elif category == "mouse":
             f = json.loads(item.get("metadata", "{}")).get("extra_fields")
             for key, value in f.items():
-                # Date of birth needs to be converted to datetime.
-                if key.split(".")[1] == "date_of_birth":
-                    logger.info(
-                        f"mouse date of birth  will be converted from string to datetime. \n From "
-                        + str(value["value"])
-                        + " to "
-                        + str(datetime.fromisoformat(value["value"]))
-                        + ")"
-                    )
 
-                    metadata["Subject"][key.split(".")[1]] = datetime.fromisoformat(
-                        value["value"]
-                    )
-                # Mouse weight must always be given in g and is automatically converted to kg for pynwb.
-                elif key.split(".")[1] == "weight":
-                    weight_str = convert_weight(value["value"])
-                    metadata["Subject"][key.split(".")[1]] = weight_str
-
-                else:
-                    metadata["Subject"][key.split(".")[1]] = value["value"]
+                metadata["Subject"][key.split(".")[1]] = value["value"]
         elif category == "silicon probe":
             metadata["Other"]["SiliconProbe"] = dict()
             f = json.loads(item.get("metadata", "{}")).get("extra_fields")
@@ -122,5 +96,113 @@ def get_nwb_metadata(experiment_id):
                     val = float(val)
                 metadata["Other"]["OptogeneticStimulationSite"][key.split(".")[1]] = val
 
-    logger.debug(f"report final metadata: \n" + dict_to_string(metadata))
+    logger.debug(f"Report final metadata: \n" + dict_to_string(metadata))
     return metadata
+
+
+def get_nwb_metadata(experiment_id):
+    """
+    Collects metadata based on the experiment id and converts the weight to a float.
+    This is needed for further export to nwb_converter.
+
+    This function also validates, that all metadata is nwb compatible.
+
+
+    :param experiment_id:  The experiment id given by the user.
+
+    :return: Final nwb metadata to be passed on.
+    :rtype: dict
+    """
+    metadata = get_raw_nwb_metadata(experiment_id)
+
+    # nwb_converter unfortunately needs the weight to be a float in kg.
+    metadata["Subject"]["weight"] = convert_weight(metadata["Subject"]["weight"])
+
+    if validate_pynwb_data(metadata):
+        return metadata
+
+    else:
+        raise Exception("Could not validate nwb file.")
+
+
+def create_pynwb(nwb_metadata):
+    """
+    Transformes the nwb_metadata dict into a pynwb NWBFile.
+    For this all dates must be converted to datetime and the weight back into a string.
+    This is used for the validation function.
+
+
+    :param nwb_metadata:  The dictionary that is due to be exported to ``nwb_converter``
+    :type nwb_metadata: dict
+    :return: The pynwb.NWBFile object.
+    :rtype: pynwb.NWBFile
+    """
+
+    pynwb_metadata = deepcopy(nwb_metadata)
+
+    # session_start_time needs to be converted to datatime for pynwb
+    # This conversion loggs a warning, as no timezone is specified. It assumes local time, which is fine for now.
+    pynwb_metadata["NWBFile"]["session_start_time"] = convert_datetime(
+        pynwb_metadata["NWBFile"], "session_start_time"
+    )
+
+    # Subject date of birth needs to be converted to datetime.
+    pynwb_metadata["Subject"]["date_of_birth"] = convert_datetime(
+        pynwb_metadata["Subject"], "date_of_birth"
+    )
+
+    # Subject weight needs to be a string
+    if pynwb_metadata["Subject"]["weight"] != "":
+        pynwb_metadata["Subject"]["weight"] = (
+            str(nwb_metadata["Subject"]["weight"]) + " kg"
+        )
+
+    # Write pywnb and subject object.
+
+    nwbfile_dict = pynwb_metadata.get("NWBFile")
+    subject_dict = pynwb_metadata.get("Subject")
+
+    pynwbfile = NWBFile(**nwbfile_dict)
+    subject = Subject(**subject_dict)
+    pynwbfile.subject = subject
+
+    return pynwbfile
+
+
+def validate_pynwb_data(nwb_metadata):
+    """
+    Generates and validates the ``nwb_metadata`` with the ``pynwb`` validation tool.
+    This ensures, that only valid nwb data gets passed to the nwb_converter.
+
+
+    :param nwb_metadata: The dictionary that is due to be exported to ``nwb_converter``
+    :type nwb_metadata: dict
+    :return: A bool wether or not the validation was successful.
+    :rtype: bool
+    """
+
+    pynwbfile = create_pynwb(nwb_metadata)
+
+    # Make temporary nwb file for validation.
+    if platform.system() == "Windows":
+        file = NamedTemporaryFile(mode="w", suffix=".nwb", delete=False)
+    else:
+        file = NamedTemporaryFile(mode="w", suffix=".nwb")
+
+    io = NWBHDF5IO(file.name, mode="w")
+    io.write(pynwbfile)
+    # This validate function behaves a bit intuitively, when everything is fine it returns an empty list,
+    # if not it raises an exception or returns a list of warnings.
+
+    if validate(io) != []:
+        validation_bool = False
+        message = f"nwbfile could not be validated, raised errors are {validate(io)}"
+        logger.error(message)
+        raise Exception(message)
+    else:
+        validation_bool = True
+
+        logger.info(f"Successful  validation of nwb file: \n {pynwbfile}")
+    io.close()
+
+    return validation_bool

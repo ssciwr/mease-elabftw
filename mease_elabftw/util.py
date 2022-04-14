@@ -5,6 +5,8 @@ import re
 import numbers
 import json
 import logging
+from datetime import datetime
+
 
 logger = logging.getLogger("mease-elabftw")
 
@@ -13,7 +15,7 @@ url = "https://elabftw.uni-heidelberg.de"
 
 def handle_http_error(http_error, experiment_id=None):
     """
-    Unified error hanlding, for http and wrong id errors.
+    Unified error handling, for http and wrong id errors.
 
     :param http_error: Error object.
     :type http_error: HTTPError
@@ -83,7 +85,7 @@ def get_item(item_id):
 
 def get_experiments():
     """
-    Get all experiments accesible with the current token.
+    Get all experiments accessible with the current token.
 
     :return: All experiments
     :rtype: list of dict
@@ -97,27 +99,87 @@ def get_experiments():
 
 
 def convert_weight(weight_str):
+    """
+    Takes a weight determines if its in g or kg and converts it into a kg float, so that the nwb_converter accepts it.
+
+    If a unit is given in the string it will be extracted and conversion will happen according to the unit.
+    When no unit is given gram will be assumed.
+
+
+    :param weight_str: the weight as either a number or a string with or without unit.
+    :type weight_str: str or int
+    :return: unitless weight as a float
+    :rtype: float
+    """
+
     if isinstance(weight_str, numbers.Number):
         weight_str = str(weight_str)
 
     weight_str = weight_str.lower()
 
+    if weight_str == "":
+        logger.warning("No weight given.")
+
     # Check if letters are present in string:
     if weight_str.islower():
 
-        weight_str, unit_str, _ = re.split(r"([a-z])", weight_str, 1, flags=re.I)
+        # weight_str, unit_str, second_unit = re.split(r"([a-z])", weight_str, 1, flags=re.I)
+
+        match = re.compile("[^\W\d]").search(weight_str)
+        weight_str, unit_str = [
+            weight_str[: match.start()],
+            weight_str[match.start() :],
+        ]
 
         weight_str = weight_str.strip()
         unit_str = unit_str.strip()
-        if unit_str == "g" or unit_str == "kg":
-            weight_str = weight_str + " " + unit_str
+        if unit_str == "g":
+            weight = float(weight_str) / 1000
+
+        elif unit_str == "kg":
+            weight = float(weight_str)
 
         else:
-            # add this to loggs
-            weight_str = weight_str + " g"
+            weight = float(weight_str) / 1000
+            logger.error(
+                f"A unit was found but could not be interpreted. Maybe missing a whitespace: {weight_str} is interpreted as g and was conferted to {weight}"
+            )
 
-    # if no letters are present strip white space and add " g" for grams.
+    # if no letters are present strip white space.
+    # if number is greater 1 its assumed to be gram, smaller 1 assumed to be kg
     else:
-        weight_str = weight_str.strip()
-        weight_str = weight_str + " g"
-    return weight_str
+        weight = float(weight_str)
+        if weight > 1:
+            weight = weight / 1000
+
+    logger.info(f"Weight was changed from {weight_str} to {round(weight,5)}")
+
+    return round(weight, 5)
+
+
+def convert_datetime(metadata, date_name):
+    """
+    For pynwb all dates need to be of type datetime.datetime.
+
+    :param date_str: The date as an isoformat string.
+    :type date_str: string
+    :param date_name: A description of the current transformation. Only needed for error message and logging.
+    :type date_name: string
+    :return: The datetime as an datetime.datetime object
+    :rtype: datetime-datetime
+    """
+    date_str = metadata[date_name]
+    try:
+        converted_time = datetime.fromisoformat(date_str)
+    except ValueError as e:
+        raise ValueError(
+            f'An error occurred in converting "{date_name}" to datetime: "{date_str}" is not a valid isoformat datetime.'
+        )
+
+    logger.info(
+        f"{date_name} will be converted from string to datetime. \n From "
+        + str(date_str)
+        + f" to {converted_time})"
+    )
+
+    return converted_time
