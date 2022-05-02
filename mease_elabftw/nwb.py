@@ -206,3 +206,50 @@ def validate_pynwb_data(nwb_metadata):
     io.close()
 
     return validation_bool
+
+
+def get_sample_nwb_metadata(experiment_id):
+    """
+    Returns sample NWB metadata for testing purposes without needing an ElabFTW token.
+
+    :param experiment_id: Ignored - this function always returns the same sample metadata
+
+    :return: Sample NWB metadata
+    :rtype: dict
+    """
+
+    # Output of get_nwb_metadata(156) with a valid elabftw token.
+    # Note: this needs to be updated when this output changes.
+    return {
+        "NWBFile": {
+            "session_description": "test fake experiment with json metadata",
+            "identifier": "20211001-8b6f100d66f4312d539c52620f79d6a503c1e2d1",
+            "session_start_time": "2021-10-01 11:13:47",
+            "experimenter": ["Liam Keegan"],
+            "institution": "Heidelberg University, Physiology and Pathophysiology",
+            "lab": "Medical Biophysics, Groh/Mease",
+            "virus": "AAVretr ChR2-tdTomato:\n  * Virus in -80 storage: AAVrg-CAG-hChR2-tdTomato (AAV Retrograde)\n  * Origin: Addgene\n  * Comments: retrograde\n  * Expression Quality: \n  * product number: \nAAVretr Flpo:\n  * Virus in -80 storage: AAVretr EF1a-Flpo\n  * Origin: Addgene\n  * Comments: retrograde Flip\n  * Expression Quality: \n  * product number: 55637-AAVrg\n",
+        },
+        "Subject": {
+            "sex": "unknown",
+            "weight": 0.002,
+            "genotype": "Nt1Cre-ChR2-EYFP",
+            "subject_id": "xy1",
+            "description": "test mouse",
+            "date_of_birth": "2000-01-01",
+        },
+        "Ecephys": {},
+        "Other": {
+            "OptogeneticStimulationSite": {
+                "device": "the device",
+                "location": "S1: primary somatosensory cortex",
+                "description": "laser stimulation",
+                "excitation_lambda": "473",
+            },
+            "SiliconProbe": {
+                "Probe identifier:": "1234356",
+                "ElectrodeGroup.name": "H5",
+                "ElectrodeGroup.description": "a test H5 probe",
+            },
+        },
+    }

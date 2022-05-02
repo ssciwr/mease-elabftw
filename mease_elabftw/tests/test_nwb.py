@@ -113,3 +113,9 @@ def test_validate_pynwb_data():
     nwb_metadata["NWBFile"]["session_start_time"] = ""
     with pytest.raises(ValueError) as ValueError_info:
         mease_elabftw.nwb.validate_pynwb_data(nwb_metadata)
+
+
+def test_get_sample_nwb_metadata():
+    nwb_metadata = mease_elabftw.nwb.get_nwb_metadata(test_ids.valid_experiment)
+    sample_nwb_metadata = mease_elabftw.nwb.get_sample_nwb_metadata(123)
+    assert nwb_metadata == sample_nwb_metadata
