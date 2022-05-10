@@ -10,11 +10,7 @@ repos:
     rev: 22.3.0
     hooks:
       - id: black
-
-  - repo: https://github.com/dfm/black_nbconvert
-    rev: v0.4.0
-    hooks:
-      - id: black_nbconvert
+      - id: black-jupyter
 
   - repo: https://github.com/kynan/nbstripout
     rev: 0.5.0
