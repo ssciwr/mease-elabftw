@@ -10,9 +10,9 @@ def test_list_experiments():
 
 def test_list_experiments_with_owner():
     lines = mease_elabftw.list_experiments("Liam")
-    assert len(lines) == 2
+    assert len(lines) == 3
     assert (
-        lines[0]
+        lines[1]
         == "163: test fake experiment without json metadata (Liam Keegan, 2021-10-07)"
     )
 
