@@ -7,7 +7,6 @@ import json
 import logging
 from datetime import datetime
 
-
 logger = logging.getLogger("mease-elabftw")
 
 url = "https://elabftw.uni-heidelberg.de"
