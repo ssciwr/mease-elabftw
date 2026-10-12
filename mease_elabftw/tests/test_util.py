@@ -2,7 +2,6 @@ import pytest
 from mease_elabftw.util import convert_weight
 import mease_elabftw
 
-
 mease_elabftw.activate_logger(True)
 mease_elabftw.set_log_level(20)
 
